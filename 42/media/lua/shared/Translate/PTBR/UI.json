@@ -1,0 +1,7 @@
+{
+  "UI_ViewpointExtractionSupport_Title": "Viewpoint Extraction Support",
+  "UI_ViewpointExtractionSupport_Enabled": "Mostrar helicóptero de extração",
+  "UI_ViewpointExtractionSupport_EnabledTooltip": "Mostra o UH-1B durante a aproximação final, o embarque e a partida do Extraction Mode. Requer Show event aircraft no Visible Helicopter Events.",
+  "UI_ViewpointExtractionSupport_HoverHeight": "Altura ao pairar (metros)",
+  "UI_ViewpointExtractionSupport_HoverHeightTooltip": "Altura acima do ponto de extração enquanto aguarda o embarque dos sobreviventes. Não altera o local da extração nem as regras de embarque."
+}

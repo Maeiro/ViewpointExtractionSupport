@@ -1,0 +1,11 @@
+name=Viewpoint Extraction Support
+id=ViewpointExtractionSupport
+author=Maeiro
+description=Visible UH-1B extraction helicopters in Project Viewpoint. Follows Extraction Mode's approach and boarding stages using Visible Helicopter Events.
+modversion=0.1.1
+versionMin=42.21.0
+require=ExtractionMode,Viewpoint,ZombieBuddy,VisibleHelicopterEvent,UH-1BHelicopter,AviationCore
+loadModAfter=ExtractionMode,VisibleHelicopterEvent,UH-1BHelicopter,AviationCore
+javaJarFile=media/java/client/ViewpointExtractionSupport.jar
+javaPkgName=maeiro.viewpointextractionsupport
+ZBVersionMin=2.3.4
