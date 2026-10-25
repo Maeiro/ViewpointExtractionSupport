@@ -10,7 +10,7 @@ parser.add_argument("--visible-helicopter-root", required=True, type=Path)
 args = parser.parse_args()
 compat = args.visible_helicopter_root / "42/media/lua/client/VisibleHelicopterEvent_Compat.lua"
 
-for name in ("flights_spec.lua", "areas_spec.lua", "adapter_spec.lua"):
+for name in ("flights_spec.lua", "areas_spec.lua", "interaction_spec.lua", "interaction_target_spec.lua", "adapter_spec.lua"):
     lua = LuaRuntime(unpack_returned_tuples=True)
     lua.globals().projectClientPath = (root / "42/media/lua/client").as_posix()
     lua.globals().rendererCompatSource = compat.read_text(encoding="utf-8-sig")

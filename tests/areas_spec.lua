@@ -13,6 +13,26 @@ assert(areas[1].x == 100.5 and areas[1].y == 200.5 and areas[1].z == 2 and areas
 assert(pickup.data.extractionRope.x == 100, "never change the server's rope coordinates")
 assert(Areas.collect({ boarding() })[1].radius == 3)
 
+local inactive = { data = {
+    isParticipant = true, state = "RAID", native = true,
+    extractionSites = {
+        { id = 1, x = 300, y = 400, z = 1, radius = 12 },
+        { id = 2, x = 320, y = 420, z = 1 },
+    },
+} }
+local staticAreas = Areas.collect({ { data = inactive.data, native = true } })
+assert(#staticAreas == 2, "show all native extraction points before a helicopter is active")
+assert(staticAreas[1].radius == 12 and staticAreas[2].radius == 12, "use the extraction zone radius")
+
+local active = Areas.collect({
+    { data = inactive.data, native = true },
+    { data = {
+        isParticipant = true, state = "BOARDING",
+        extractionRope = { x = 300, y = 400, z = 1, radius = 3 },
+    }, native = false },
+})
+assert(#active == 2 and active[1].radius == 3, "replace an active point with its boarding radius")
+
 for _, mutate in ipairs({
     function(p) p.data.isParticipant = false end,
     function(p) p.data.state = "EXTRACTING" end,

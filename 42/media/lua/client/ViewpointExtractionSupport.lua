@@ -4,8 +4,22 @@ require "ExtractionMode/Util"
 
 local Flights = require "ViewpointExtractionSupport/Flights"
 local Areas = require "ViewpointExtractionSupport/Areas"
+local interaction = require "ViewpointExtractionSupport/Interaction"
 local Support = {}
 ViewpointExtractionSupport = Support
+
+local interactionTicks = 0
+local function installInteraction()
+    interactionTicks = interactionTicks + 1
+    if interactionTicks % 10 ~= 0 then return end
+    interaction.install()
+    interaction.sync()
+end
+
+interaction.install()
+interaction.sync()
+Events.OnGameStart.Add(function() interaction.install() end)
+Events.OnTick.Add(installInteraction)
 
 local options = PZAPI.ModOptions:create("ViewpointExtractionSupport", "UI_ViewpointExtractionSupport_Title")
 local enabled = options:addTickBox("enabled", "UI_ViewpointExtractionSupport_Enabled", true,
@@ -31,11 +45,12 @@ end
 
 function Support.reset()
     clearFlights()
+    interaction.clear()
     observations = {}
     if ViewpointExtractionSupportBridge then ViewpointExtractionSupportBridge.clearAreas() end
 end
 
-local function pickupsForPlayers(wallNow)
+local function pickupsForPlayers(wallNow, includeLocalState)
     local pickups = {}
     local states = ExtractionMode.ClientStates or { [0] = ExtractionMode.ClientState }
     for number, state in pairs(states) do
@@ -51,6 +66,9 @@ local function pickupsForPlayers(wallNow)
                 if state.pvpveMode then
                     for _, pickup in ipairs(state.nearbyExtractions or {}) do
                         pickups[#pickups + 1] = { data = pickup, native = false }
+                    end
+                    if includeLocalState then
+                        pickups[#pickups + 1] = { data = state, native = true }
                     end
                     if state.campaignHandoffActive then
                         pickups[#pickups + 1] = { data = state, native = true, campaign = true }
@@ -68,21 +86,29 @@ local function pickupsForPlayers(wallNow)
     return pickups
 end
 
-local function collect()
-    local renderer = VisibleHelicopterEvent
-    if not renderer or not renderer.active() or not getSpecificPlayer(0) then
-        Support.reset()
+local function refreshAreas()
+    if not ViewpointExtractionSupportBridge or not getSpecificPlayer(0) then
+        if ViewpointExtractionSupportBridge then ViewpointExtractionSupportBridge.clearAreas() end
         return
     end
 
-    local pickups = pickupsForPlayers(getTimestampMs())
     ViewpointExtractionSupportBridge.beginAreas()
     if showArea:getValue() then
-        for _, area in ipairs(Areas.collect(pickups)) do
+        for _, area in ipairs(Areas.collect(pickupsForPlayers(getTimestampMs(), true))) do
             ViewpointExtractionSupportBridge.area(area.x, area.y, area.z, area.radius)
         end
     end
     ViewpointExtractionSupportBridge.endAreas()
+end
+
+local function collect()
+    local renderer = VisibleHelicopterEvent
+    if not renderer or not renderer.active() or not getSpecificPlayer(0) then
+        if not renderer or not getSpecificPlayer(0) then Support.reset() else clearFlights() end
+        return
+    end
+
+    local pickups = pickupsForPlayers(getTimestampMs())
     if not enabled:getValue() or not renderer.modelAvailable("UH-1BHelicopter") then
         clearFlights()
         return
@@ -141,6 +167,7 @@ end
 -- Submit inside the renderer's collection cycle, before it removes unseen flights.
 LuaEventManager.AddEvent("OnViewpointExtractionFlights")
 Events.OnViewpointExtractionFlights.Add(Support.collect)
+Events.OnTick.Add(refreshAreas)
 Events.OnGameStart.Add(Support.reset)
 Events.OnDisconnect.Add(Support.reset)
 Events.OnMainMenuEnter.Add(Support.reset)

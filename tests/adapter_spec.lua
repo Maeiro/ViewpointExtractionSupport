@@ -160,7 +160,7 @@ assert(#groundAreas == 1, "ground areas do not need loaded aircraft assets")
 available, active = true, false
 frame(19000)
 assert(count() == 0)
-assert(#groundAreas == 0)
+assert(#groundAreas == 1, "ground areas remain visible without an active helicopter")
 active = true
 frame(19500)
 assert(count() == 2)
