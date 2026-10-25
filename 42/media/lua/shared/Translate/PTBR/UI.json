@@ -7,5 +7,7 @@
   "UI_ViewpointExtractionSupport_ShowArea": "Mostrar área de extração em 3D",
   "UI_ViewpointExtractionSupport_ShowAreaTooltip": "Mostra um cilindro amarelo translúcido durante o embarque, usando o raio de embarque do Extraction Mode. Substitui a seta de extração no Viewpoint enquanto o marcador estiver visível.",
   "UI_ViewpointExtractionSupport_OnlyWithInventory": "Mostrar o HUD do Extraction Mode apenas com o inventário aberto",
-  "UI_ViewpointExtractionSupport_OnlyWithInventoryTooltip": "Oculta o painel do Extraction Mode enquanto o inventário, a janela de loot ou uma interface de inventário compatível não estiver aberta. Desativado por padrão."
+  "UI_ViewpointExtractionSupport_OnlyWithInventoryTooltip": "Oculta o painel do Extraction Mode enquanto o inventário, a janela de loot ou uma interface de inventário compatível não estiver aberta. Desativado por padrão.",
+  "UI_ViewpointExtractionSupport_UseNeatUI": "Usar o estilo do NeatUI nos menus do Extraction Mode",
+  "UI_ViewpointExtractionSupport_UseNeatUITooltip": "Usa o estilo de painéis e botões do NeatUI quando o NeatUI_Framework está instalado. Volta automaticamente à interface normal do Extraction Mode quando ele não está disponível. Ativado por padrão."
 }

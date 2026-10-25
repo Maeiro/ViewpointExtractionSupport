@@ -6,10 +6,12 @@ local Flights = require "ViewpointExtractionSupport/Flights"
 local Areas = require "ViewpointExtractionSupport/Areas"
 local interaction = require "ViewpointExtractionSupport/Interaction"
 local HudVisibility = require "ViewpointExtractionSupport/HudVisibility"
+local NeatUI = require "ViewpointExtractionSupport/NeatUI"
 local Support = {}
 ViewpointExtractionSupport = Support
 
 local onlyWithInventory
+local useNeatUI
 local interactionTicks = 0
 local function installInteraction()
     interactionTicks = interactionTicks + 1
@@ -17,6 +19,7 @@ local function installInteraction()
     interaction.install()
     interaction.sync()
     HudVisibility.install(onlyWithInventory)
+    NeatUI.sync(useNeatUI)
 end
 
 interaction.install()
@@ -24,6 +27,7 @@ interaction.sync()
 Events.OnGameStart.Add(function()
     interaction.install()
     HudVisibility.install(onlyWithInventory)
+    NeatUI.sync(useNeatUI)
 end)
 Events.OnTick.Add(installInteraction)
 
@@ -36,7 +40,10 @@ local showArea = options:addTickBox("showArea", "UI_ViewpointExtractionSupport_S
     "UI_ViewpointExtractionSupport_ShowAreaTooltip")
 onlyWithInventory = options:addTickBox("onlyWithInventory", "UI_ViewpointExtractionSupport_OnlyWithInventory", false,
     "UI_ViewpointExtractionSupport_OnlyWithInventoryTooltip")
+useNeatUI = options:addTickBox("useNeatUI", "UI_ViewpointExtractionSupport_UseNeatUI", true,
+    "UI_ViewpointExtractionSupport_UseNeatUITooltip")
 HudVisibility.install(onlyWithInventory)
+NeatUI.sync(useNeatUI)
 
 local runtime, submitted, observations = Flights.new(), {}, {}
 local warned = false
@@ -172,6 +179,7 @@ options.apply = function()
     if not enabled:getValue() then clearFlights() end
     if not showArea:getValue() and ViewpointExtractionSupportBridge then ViewpointExtractionSupportBridge.clearAreas() end
     HudVisibility.install(onlyWithInventory)
+    NeatUI.sync(useNeatUI)
     if ExtractionMode.UIVisibility then ExtractionMode.UIVisibility.updateHUD() end
 end
 
