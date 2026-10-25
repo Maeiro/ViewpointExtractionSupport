@@ -31,6 +31,22 @@ public final class Bridge {
         ExtractionAudio.clear();
     }
 
+    public static void beginAreas() {
+        GroundAreas.begin();
+    }
+
+    public static void area(double x, double y, double z, double radius) {
+        GroundAreas.add(x, y, z, radius);
+    }
+
+    public static void endAreas() {
+        GroundAreas.end();
+    }
+
+    public static void clearAreas() {
+        GroundAreas.clear();
+    }
+
     public static void collectFlights() {
         try {
             if (triggerEvent == null) {

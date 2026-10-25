@@ -3,5 +3,7 @@
   "UI_ViewpointExtractionSupport_Enabled": "Show extraction helicopter",
   "UI_ViewpointExtractionSupport_EnabledTooltip": "Show the UH-1B during Extraction Mode's final approach, boarding and departure. Requires Show event aircraft in Visible Helicopter Events.",
   "UI_ViewpointExtractionSupport_HoverHeight": "Hover height (metres)",
-  "UI_ViewpointExtractionSupport_HoverHeightTooltip": "Height above the extraction point while waiting for survivors to board. Does not change the extraction location or boarding rules."
+  "UI_ViewpointExtractionSupport_HoverHeightTooltip": "Height above the extraction point while waiting for survivors to board. Does not change the extraction location or boarding rules.",
+  "UI_ViewpointExtractionSupport_ShowArea": "Show extraction area in 3D",
+  "UI_ViewpointExtractionSupport_ShowAreaTooltip": "Show a translucent yellow cylinder during boarding, using Extraction Mode's boarding radius. Replaces the extraction arrow in Viewpoint while the marker is visible."
 }

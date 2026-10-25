@@ -1,6 +1,6 @@
 # Viewpoint Extraction Support
 
-Displays a UH-1B helicopter during Extraction Mode pickups in Project Viewpoint. The aircraft approaches the selected extraction point during the final approach countdown, descends to a hover for boarding, and flies away when the pickup ends or is cancelled.
+Displays a UH-1B helicopter during Extraction Mode pickups in Project Viewpoint. The aircraft approaches the selected extraction point during the final approach countdown, descends to a hover for boarding, and flies away when the pickup ends or is cancelled. A translucent yellow cylindrical marker identifies the boarding area in the 3D world.
 
 This is a compatibility addon for **Visible Helicopter Events**. It uses that mod's existing renderer and the enabled UH-1B assets; no third-party models, textures or renderer code are redistributed.
 
@@ -22,6 +22,7 @@ In **Mod Options > Viewpoint Extraction Support**:
 
 - **Show extraction helicopter**: enabled by default.
 - **Hover height (metres)**: 6–30 metres above the extraction point's floor; default 12.
+- **Show extraction area in 3D**: enabled by default. Displays the authoritative boarding rope's interaction radius as a yellow cylinder fading toward its top. This option works independently of the addon's helicopter display option. The matching extraction arrow is hidden in Viewpoint when the marker is rendered.
 
 English and Brazilian Portuguese interface text is included. Extraction timing, boarding interactions, zombie attraction and sound playback remain owned by Extraction Mode. With Viewpoint's directional aircraft audio enabled, the original native helicopter recording follows the extraction model's position and altitude. This addon creates visual aircraft, not physical vehicles or extra extraction destinations.
 
@@ -34,6 +35,10 @@ Motion uses Extraction Mode's simulation clock, so single-player pause and time 
 A small ZombieBuddy hook submits the addon flights immediately before `visiblehelicopter.LuaBridge.endFlights` removes unseen flights. It raises the custom Lua event `OnViewpointExtractionFlights`, without replacing the renderer's existing A-Life or Week One collectors. Another hook suppresses the duplicate native aircraft's visual sample only while an active shared/campaign extraction has a loaded replacement. A hook after `HelicopterAudio.update` positions the existing FMOD event at that extraction aircraft and reapplies the original volume with Visible Helicopter Events' distance attenuation, hearing checks and terrain height. This prevents a distant native event from muting a nearby extraction model. It does not start a second sound or change the engine's helicopter coordinates. Isometric audio and unrelated helicopter events retain their original behavior. Disabling the addon or missing UH-1B assets leaves native rendering available.
 
 The code runs on clients and consumes Extraction Mode's existing synchronization. In multiplayer the addon still has to be loaded by the session's mod configuration; persistence across a Lua reset on servers that omit the addon has not been implemented or verified.
+
+Boarding areas use the server-supplied rope coordinates and radius, and disappear as soon as the pickup stops boarding or its snapshot becomes stale. A 32-segment cylinder, 2.2 metres high, uses a small alpha-gradient texture in Viewpoint's decal batch. Its vertical segments follow terrain relief instead of relying on a single flat circle that can intersect uneven terrain. Both surface orientations are submitted to support viewpoints inside and outside the marker. It is added after the regular decal snapshot, including when blood decals are disabled, and does not create world objects or blood data. Areas are drawn only within 100 tiles on a loaded floor.
+
+Arrow filtering tracks arrows created with Extraction Mode's `Item_Rope2` texture, then checks their exact destination against successfully rendered boarding areas. Only their draw-time active state is temporarily changed, with restoration on method exit. Isometric arrows, other destinations, inactive arrows and unrelated arrow textures retain their existing behavior. A missing marker texture or full render batch leaves the original extraction arrow available. Boarding input remains managed by Extraction Mode.
 
 ## Build and local installation
 
@@ -52,10 +57,11 @@ The regression suite uses Python with `lupa`'s Lua 5.1 runtime and executes the 
 ```powershell
 python tests/run.py --visible-helicopter-root 'D:\SteamLibrary\steamapps\workshop\content\108600\3819322670\mods\VisibleHelicopterEvent'
 .\tests\test_audio.ps1 -VisibleHelicopterJar 'D:\SteamLibrary\steamapps\workshop\content\108600\3819322670\mods\VisibleHelicopterEvent\42\media\java\client\VisibleHelicopterEvent.jar'
+.\tests\test_ground.ps1 -ViewpointJar 'D:\SteamLibrary\steamapps\workshop\content\108600\3809306528\mods\Viewpoint\42\media\java\client\Viewpoint.jar'
 ```
 
-It covers authoritative site selection, interpolated countdowns, delayed packets, approach/hover/departure, elevated sites, cancellation, duplicate observers, simultaneous raids, readiness fallback, disabled/missing dependencies, stale multiplayer state and cleanup without removing other mods' aircraft. Audio checks reuse the installed renderer's attenuation code with FMOD and listener fixtures to verify model coordinates, terrain/altitude conversion, hearing rules, isometric behavior and reuse of the existing event.
+It covers authoritative site selection, interpolated countdowns, delayed packets, approach/hover/departure, elevated sites, cancellation, duplicate observers, simultaneous raids, readiness fallback, disabled/missing dependencies, stale multiplayer state and cleanup without removing other mods' aircraft. Audio checks reuse the installed renderer's attenuation code with FMOD and listener fixtures to verify model coordinates, terrain/altitude conversion, hearing rules, isometric behavior and reuse of the existing event. Marker checks submit to the installed Viewpoint decal batch and verify a closed cylinder, inside/outside faces, radius, gradient UVs, camera motion, elevated floors, unavailable assets and independent option handling. Arrow checks cover destination/texture matching, isometric fallback, original active state and restoration after drawing.
 
-Helicopter visibility, flight animation and native directional extraction audio have been manually verified in single-player with the required mods enabled. Multiplayer behavior still requires an in-game test.
+Helicopter visibility, flight animation and native directional extraction audio have been manually verified in single-player with the required mods enabled. The new cylindrical marker, arrow filtering and multiplayer behavior still require an in-game test.
 
 Credits: Zakreon (Extraction Mode), 50ShadesOfMyCow (Visible Helicopter Events), User (UH-1B Helicopter), and the authors of Project Viewpoint, ZombieBuddy and Aviation Core.

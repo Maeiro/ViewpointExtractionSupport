@@ -27,7 +27,7 @@ package.loaded["ExtractionMode/Config"] = true
 package.loaded["ExtractionMode/Util"] = true
 
 local now, multiplayer, active, available, ready, directional = 0, false, true, true, false, true
-local models, seen, suppressed, audioPosition = {}, {}, false, nil
+local models, seen, suppressed, audioPosition, groundAreas, pendingAreas = {}, {}, false, nil, {}, {}
 local player = { isDead = function() return false end, getX = function() return 100 end, getY = function() return 200 end }
 getSpecificPlayer = function(number) if number == 0 or number == 1 then return player end end
 getTimestampMs = function() return now end
@@ -42,6 +42,10 @@ ViewpointExtractionSupportBridge = {
     suppressNative = function(value) suppressed = value end,
     nativeAudioPosition = function(x, y, height) audioPosition = { x = x, y = y, height = height } end,
     clearNativeAudioPosition = function() audioPosition = nil end,
+    beginAreas = function() pendingAreas = {} end,
+    area = function(x, y, z, radius) pendingAreas[#pendingAreas + 1] = { x = x, y = y, z = z, radius = radius } end,
+    endAreas = function() groundAreas = pendingAreas end,
+    clearAreas = function() groundAreas, pendingAreas = {}, {} end,
 }
 VisibleHelicopterEvent = {
     active = function() return active end,
@@ -73,6 +77,7 @@ local function snapshot()
         _hudRevision = 1, isParticipant = true, state = "BOARDING", raidId = 2, activeExtraction = 1,
         extractionSeconds = 0, extractionTotalSeconds = 90,
         extractionSites = { { id = 1, x = 100, y = 200, z = 0 } },
+        extractionRope = { x = 100, y = 200, z = 0, radius = 3, siteId = 1 },
     }
 end
 local function count()
@@ -91,6 +96,7 @@ ExtractionMode.ClientState = state
 frame(0)
 assert(count() == 1, "flight must be submitted before the real renderer's endFlights cleanup")
 assert(not suppressed, "keep the native visual while the replacement model is loading")
+assert(#groundAreas == 1 and groundAreas[1].radius == 3, "show the actual boarding radius")
 assert(audioPosition and audioPosition.x == 100.5 and audioPosition.y == 200.5,
     "audio must track the extraction site even before its visual is ready")
 ready = true
@@ -116,12 +122,14 @@ values.enabled = false
 frame(1200)
 assert(count() == 1 and models.foreign, "disabling must remove only this addon's models")
 assert(not suppressed and audioPosition == nil)
+assert(#groundAreas == 1, "ground areas must remain available with the helicopter option disabled")
 values.enabled = true
 frame(1300)
 assert(count() == 2)
 ViewpointExtractionSupport.reset()
 assert(count() == 1 and models.foreign)
 assert(audioPosition == nil)
+assert(#groundAreas == 0)
 VisibleHelicopterEventCompat.weekOneFlights = originalCollector
 models = {}
 
@@ -138,6 +146,7 @@ assert(count() == 2 and not suppressed, "independent PvPvE pickups must not supp
 assert(audioPosition == nil, "PvPvE emitters must not hijack the native helicopter's audio")
 frame(8001)
 assert(not suppressed)
+assert(#groundAreas == 0, "stale multiplayer state must clear ground areas immediately")
 frame(16001)
 assert(count() == 0, "stale multiplayer snapshots must stop feeding the flights")
 state._hudRevision = 2
@@ -147,14 +156,17 @@ assert(count() == 2, "new authoritative snapshots must restore the visuals")
 available = false
 frame(18000)
 assert(count() == 0 and not suppressed, "missing model must leave native rendering available")
+assert(#groundAreas == 1, "ground areas do not need loaded aircraft assets")
 available, active = true, false
 frame(19000)
 assert(count() == 0)
+assert(#groundAreas == 0)
 active = true
 frame(19500)
 assert(count() == 2)
 Events.OnDisconnect.fire()
 assert(count() == 0 and not suppressed and audioPosition == nil)
+assert(#groundAreas == 0)
 
 multiplayer = false
 ExtractionMode.ClientStates[0] = snapshot()
@@ -164,4 +176,7 @@ assert(audioPosition)
 directional = false
 frame(20100)
 assert(audioPosition == nil, "respect the renderer's directional audio preference")
-print("adapter_spec: installed VHE collection cycle, native audio position, readiness fallback, split-screen, cleanup and multiplayer snapshots passed")
+values.showArea = false
+frame(20200)
+assert(#groundAreas == 0 and count() == 1, "disabling the area must preserve the aircraft")
+print("adapter_spec: installed VHE collection cycle, independent ground areas, native audio, readiness fallback, split-screen, cleanup and multiplayer snapshots passed")

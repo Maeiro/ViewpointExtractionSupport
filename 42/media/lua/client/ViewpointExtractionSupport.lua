@@ -3,6 +3,7 @@ require "ExtractionMode/Config"
 require "ExtractionMode/Util"
 
 local Flights = require "ViewpointExtractionSupport/Flights"
+local Areas = require "ViewpointExtractionSupport/Areas"
 local Support = {}
 ViewpointExtractionSupport = Support
 
@@ -11,11 +12,13 @@ local enabled = options:addTickBox("enabled", "UI_ViewpointExtractionSupport_Ena
     "UI_ViewpointExtractionSupport_EnabledTooltip")
 local hoverHeight = options:addSlider("hoverHeight", "UI_ViewpointExtractionSupport_HoverHeight",
     6, 30, 1, 12, "UI_ViewpointExtractionSupport_HoverHeightTooltip")
+local showArea = options:addTickBox("showArea", "UI_ViewpointExtractionSupport_ShowArea", true,
+    "UI_ViewpointExtractionSupport_ShowAreaTooltip")
 
 local runtime, submitted, observations = Flights.new(), {}, {}
 local warned = false
 
-function Support.reset()
+local function clearFlights()
     if VisibleHelicopterEvent then
         for id in pairs(submitted) do VisibleHelicopterEvent.removeFlight(id) end
     end
@@ -23,7 +26,13 @@ function Support.reset()
         ViewpointExtractionSupportBridge.suppressNative(false)
         ViewpointExtractionSupportBridge.clearNativeAudioPosition()
     end
-    runtime, submitted, observations = Flights.new(), {}, {}
+    runtime, submitted = Flights.new(), {}
+end
+
+function Support.reset()
+    clearFlights()
+    observations = {}
+    if ViewpointExtractionSupportBridge then ViewpointExtractionSupportBridge.clearAreas() end
 end
 
 local function pickupsForPlayers(wallNow)
@@ -61,14 +70,26 @@ end
 
 local function collect()
     local renderer = VisibleHelicopterEvent
-    if not enabled:getValue() or not renderer or not renderer.active()
-        or not renderer.modelAvailable("UH-1BHelicopter") or not getSpecificPlayer(0) then
+    if not renderer or not renderer.active() or not getSpecificPlayer(0) then
         Support.reset()
         return
     end
 
+    local pickups = pickupsForPlayers(getTimestampMs())
+    ViewpointExtractionSupportBridge.beginAreas()
+    if showArea:getValue() then
+        for _, area in ipairs(Areas.collect(pickups)) do
+            ViewpointExtractionSupportBridge.area(area.x, area.y, area.z, area.radius)
+        end
+    end
+    ViewpointExtractionSupportBridge.endAreas()
+    if not enabled:getValue() or not renderer.modelAvailable("UH-1BHelicopter") then
+        clearFlights()
+        return
+    end
+
     local config = ExtractionMode.Config
-    local poses = Flights.update(runtime, pickupsForPlayers(getTimestampMs()),
+    local poses = Flights.update(runtime, pickups,
         ExtractionMode.Util.timerNowMs(), {
             approachSeconds = tonumber(config.HELICOPTER_ACTIVE_APPROACH_SECONDS) or 30,
             campaignApproachSeconds = tonumber(config.CAMPAIGN_HELICOPTER_ACTIVE_APPROACH_SECONDS) or 60,
@@ -113,7 +134,8 @@ function Support.collect()
 end
 
 options.apply = function()
-    if not enabled:getValue() then Support.reset() end
+    if not enabled:getValue() then clearFlights() end
+    if not showArea:getValue() and ViewpointExtractionSupportBridge then ViewpointExtractionSupportBridge.clearAreas() end
 end
 
 -- Submit inside the renderer's collection cycle, before it removes unseen flights.
