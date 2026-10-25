@@ -1,6 +1,13 @@
 local panelRenders = 0
 local buttonFills = 0
 local buttonBorders = 0
+local buttonPolygons = 0
+
+Texture = {
+    getWhite = function()
+        return {}
+    end,
+}
 
 NinePatchTexture = {
     getSharedTexture = function(path)
@@ -11,10 +18,13 @@ NinePatchTexture = {
 }
 
 local button = {
+    width = 100,
+    height = 30,
     displayBackground = true,
     prerender = function() end,
     drawRect = function() buttonFills = buttonFills + 1 end,
     drawRectBorder = function() buttonBorders = buttonBorders + 1 end,
+    drawPolygon = function() buttonPolygons = buttonPolygons + 1 end,
     setDisplayBackground = function(self, value) self.displayBackground = value end,
 }
 
@@ -40,7 +50,8 @@ assert(panel.background == false, "hide the vanilla panel background while NeatU
 panel:prerender()
 button:prerender()
 assert(panelRenders == 2, "draw the NeatUI header and body")
-assert(buttonFills == 1 and buttonBorders == 1, "draw rectangular NeatUI button styling")
+assert(buttonFills == 6 and buttonBorders == 0 and buttonPolygons == 24,
+    "draw rounded NeatUI button styling")
 
 option.value = false
 assert(not NeatUI.sync(option), "disable NeatUI styling from the option")

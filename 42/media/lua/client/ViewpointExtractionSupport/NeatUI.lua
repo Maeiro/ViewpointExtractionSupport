@@ -5,6 +5,7 @@ local BODY_PATH = "media/ui/NeatUI/DefaultPanel/MainPanelBG_FlatTop.png"
 local HEADER_HEIGHT = 36
 
 local panelTextureCache = {}
+local whiteTexture
 local openHooksInstalled = false
 local requested = false
 local available = false
@@ -80,6 +81,47 @@ local function drawPanel(panel)
     return true
 end
 
+local function getWhiteTexture()
+    if whiteTexture ~= nil then return whiteTexture or nil end
+    local ok, texture = pcall(Texture.getWhite)
+    whiteTexture = ok and texture or false
+    return texture
+end
+
+local function drawCorner(ui, texture, centerX, centerY, radius, startAngle, endAngle, color)
+    local segments = 3
+    local step = (endAngle - startAngle) / segments
+    for index = 0, segments - 1 do
+        local first = math.rad(startAngle + step * index)
+        local second = math.rad(startAngle + step * (index + 1))
+        ui:drawPolygon(texture,
+            centerX, centerY,
+            centerX + math.cos(first) * radius, centerY + math.sin(first) * radius,
+            centerX + math.cos(second) * radius, centerY + math.sin(second) * radius,
+            centerX, centerY,
+            color.r, color.g, color.b, color.a)
+    end
+end
+
+local function drawRoundedRect(ui, x, y, width, height, radius, color)
+    if width <= 0 or height <= 0 then return end
+    radius = math.min(radius, math.min(width, height) / 2)
+    local texture = getWhiteTexture()
+    if not texture then
+        ui:drawRect(x, y, width, height, color.a, color.r, color.g, color.b)
+        return
+    end
+
+    ui:drawRect(x + radius, y, width - radius * 2, height, color.a, color.r, color.g, color.b)
+    ui:drawRect(x, y + radius, radius, height - radius * 2, color.a, color.r, color.g, color.b)
+    ui:drawRect(x + width - radius, y + radius, radius, height - radius * 2,
+        color.a, color.r, color.g, color.b)
+    drawCorner(ui, texture, x + radius, y + radius, radius, 180, 270, color)
+    drawCorner(ui, texture, x + width - radius, y + radius, radius, 270, 360, color)
+    drawCorner(ui, texture, x + width - radius, y + height - radius, radius, 0, 90, color)
+    drawCorner(ui, texture, x + radius, y + height - radius, radius, 90, 180, color)
+end
+
 local function drawButton(button)
     local red, green, blue = 0.08, 0.09, 0.10
     if button.enable == false then
@@ -89,8 +131,10 @@ local function drawButton(button)
     elseif button.mouseOver or (type(button.isMouseOver) == "function" and button:isMouseOver()) then
         red, green, blue = 0.20, 0.20, 0.21
     end
-    button:drawRect(0, 0, button.width, button.height, 0.90, red, green, blue)
-    button:drawRectBorder(0, 0, button.width, button.height, 0.85, 0.42, 0.42, 0.42)
+    drawRoundedRect(button, 0, 0, button.width, button.height, 5,
+        { a = 0.85, r = 0.42, g = 0.42, b = 0.42 })
+    drawRoundedRect(button, 1, 1, button.width - 2, button.height - 2, 4,
+        { a = 0.90, r = red, g = green, b = blue })
 end
 
 local function styleButton(button, enabled)
