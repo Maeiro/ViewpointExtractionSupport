@@ -23,6 +23,7 @@ In **Mod Options > Viewpoint Extraction Support**:
 - **Show extraction helicopter**: enabled by default.
 - **Hover height (metres)**: 6–30 metres above the extraction point's floor; default 12.
 - **Show extraction area in 3D**: enabled by default. Displays every known extraction point as a yellow cylinder fading toward its top, even before a pickup is active. During boarding, the active rope's authoritative interaction radius replaces the point marker. This option works independently of the addon's helicopter display option. The matching extraction arrow is hidden in Viewpoint when the marker is rendered.
+- **Show Extraction Mode HUD only with inventory open**: disabled by default. When enabled, hides Extraction Mode's top panel unless the player inventory, loot window or supported inventory interface is open.
 
 English and Brazilian Portuguese interface text is included. Extraction timing, boarding interactions, zombie attraction and sound playback remain owned by Extraction Mode. With Viewpoint's directional aircraft audio enabled, the original native helicopter recording follows the extraction model's position and altitude. This addon creates visual aircraft, not physical vehicles or extra extraction destinations.
 

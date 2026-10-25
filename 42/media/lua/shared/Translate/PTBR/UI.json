@@ -5,5 +5,7 @@
   "UI_ViewpointExtractionSupport_HoverHeight": "Altura ao pairar (metros)",
   "UI_ViewpointExtractionSupport_HoverHeightTooltip": "Altura acima do ponto de extração enquanto aguarda o embarque dos sobreviventes. Não altera o local da extração nem as regras de embarque.",
   "UI_ViewpointExtractionSupport_ShowArea": "Mostrar área de extração em 3D",
-  "UI_ViewpointExtractionSupport_ShowAreaTooltip": "Mostra um cilindro amarelo translúcido durante o embarque, usando o raio de embarque do Extraction Mode. Substitui a seta de extração no Viewpoint enquanto o marcador estiver visível."
+  "UI_ViewpointExtractionSupport_ShowAreaTooltip": "Mostra um cilindro amarelo translúcido durante o embarque, usando o raio de embarque do Extraction Mode. Substitui a seta de extração no Viewpoint enquanto o marcador estiver visível.",
+  "UI_ViewpointExtractionSupport_OnlyWithInventory": "Mostrar o HUD do Extraction Mode apenas com o inventário aberto",
+  "UI_ViewpointExtractionSupport_OnlyWithInventoryTooltip": "Oculta o painel do Extraction Mode enquanto o inventário, a janela de loot ou uma interface de inventário compatível não estiver aberta. Desativado por padrão."
 }

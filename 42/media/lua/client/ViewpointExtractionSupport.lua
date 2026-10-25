@@ -5,20 +5,26 @@ require "ExtractionMode/Util"
 local Flights = require "ViewpointExtractionSupport/Flights"
 local Areas = require "ViewpointExtractionSupport/Areas"
 local interaction = require "ViewpointExtractionSupport/Interaction"
+local HudVisibility = require "ViewpointExtractionSupport/HudVisibility"
 local Support = {}
 ViewpointExtractionSupport = Support
 
+local onlyWithInventory
 local interactionTicks = 0
 local function installInteraction()
     interactionTicks = interactionTicks + 1
     if interactionTicks % 10 ~= 0 then return end
     interaction.install()
     interaction.sync()
+    HudVisibility.install(onlyWithInventory)
 end
 
 interaction.install()
 interaction.sync()
-Events.OnGameStart.Add(function() interaction.install() end)
+Events.OnGameStart.Add(function()
+    interaction.install()
+    HudVisibility.install(onlyWithInventory)
+end)
 Events.OnTick.Add(installInteraction)
 
 local options = PZAPI.ModOptions:create("ViewpointExtractionSupport", "UI_ViewpointExtractionSupport_Title")
@@ -28,6 +34,9 @@ local hoverHeight = options:addSlider("hoverHeight", "UI_ViewpointExtractionSupp
     6, 30, 1, 12, "UI_ViewpointExtractionSupport_HoverHeightTooltip")
 local showArea = options:addTickBox("showArea", "UI_ViewpointExtractionSupport_ShowArea", true,
     "UI_ViewpointExtractionSupport_ShowAreaTooltip")
+onlyWithInventory = options:addTickBox("onlyWithInventory", "UI_ViewpointExtractionSupport_OnlyWithInventory", false,
+    "UI_ViewpointExtractionSupport_OnlyWithInventoryTooltip")
+HudVisibility.install(onlyWithInventory)
 
 local runtime, submitted, observations = Flights.new(), {}, {}
 local warned = false
@@ -162,6 +171,8 @@ end
 options.apply = function()
     if not enabled:getValue() then clearFlights() end
     if not showArea:getValue() and ViewpointExtractionSupportBridge then ViewpointExtractionSupportBridge.clearAreas() end
+    HudVisibility.install(onlyWithInventory)
+    if ExtractionMode.UIVisibility then ExtractionMode.UIVisibility.updateHUD() end
 end
 
 -- Submit inside the renderer's collection cycle, before it removes unseen flights.

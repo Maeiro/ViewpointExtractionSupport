@@ -5,5 +5,7 @@
   "UI_ViewpointExtractionSupport_HoverHeight": "Hover height (metres)",
   "UI_ViewpointExtractionSupport_HoverHeightTooltip": "Height above the extraction point while waiting for survivors to board. Does not change the extraction location or boarding rules.",
   "UI_ViewpointExtractionSupport_ShowArea": "Show extraction area in 3D",
-  "UI_ViewpointExtractionSupport_ShowAreaTooltip": "Show a translucent yellow cylinder during boarding, using Extraction Mode's boarding radius. Replaces the extraction arrow in Viewpoint while the marker is visible."
+  "UI_ViewpointExtractionSupport_ShowAreaTooltip": "Show a translucent yellow cylinder during boarding, using Extraction Mode's boarding radius. Replaces the extraction arrow in Viewpoint while the marker is visible.",
+  "UI_ViewpointExtractionSupport_OnlyWithInventory": "Show Extraction Mode HUD only with inventory open",
+  "UI_ViewpointExtractionSupport_OnlyWithInventoryTooltip": "Hide the Extraction Mode panel unless the player inventory, loot window or supported inventory UI is open. Disabled by default."
 }
