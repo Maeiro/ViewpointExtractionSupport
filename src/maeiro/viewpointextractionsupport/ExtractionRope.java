@@ -26,7 +26,7 @@ public final class ExtractionRope {
     private static boolean failed;
 
     private record Rope(String id, float x, float y, float groundX, float groundY,
-            float ground, float height, float progress, float alpha) {
+            float ground, float height, float progress, float alpha, float lift) {
     }
 
     private static final class State {
@@ -52,7 +52,7 @@ public final class ExtractionRope {
     }
 
     public static void add(String id, double x, double y, double groundX, double groundY, double ground,
-            double height, double progress, double alpha) {
+            double height, double progress, double alpha, String aircraftId) {
         if (id == null || id.isBlank() || id.length() > 180 || pending.size() >= 32
                 || !finite(x) || !finite(y) || !finite(groundX) || !finite(groundY)
                 || !finite(ground) || !finite(height)
@@ -62,7 +62,7 @@ public final class ExtractionRope {
                 || !finite(progress) || progress < 0 || progress > 1
                 || !finite(alpha) || alpha <= 0 || alpha > 1) return;
         pending.add(new Rope(id, (float) x, (float) y, (float) groundX, (float) groundY,
-                (float) ground, (float) height, (float) progress, (float) alpha));
+                (float) ground, (float) height, (float) progress, (float) alpha, modelLift(aircraftId)));
     }
 
     public static void end() {
@@ -114,7 +114,7 @@ public final class ExtractionRope {
                 activeIds.add(rope.id);
                 if (distanceSquared(rope, cameraX, cameraY) > 10000) continue;
                 float groundZ = rope.ground;
-                float topZ = rope.height + modelLift - 0.1f;
+                float topZ = rope.height + rope.lift - 0.1f;
                 float horizontalX = rope.x - rope.groundX;
                 float horizontalY = rope.y - rope.groundY;
                 float verticalDistance = topZ - (groundZ + GROUND_GAP);
@@ -348,5 +348,18 @@ public final class ExtractionRope {
         } catch (ReflectiveOperationException | RuntimeException ignored) {
             modelLift = -0.1f;
         }
+    }
+
+    private static float modelLift(String aircraftId) {
+        try {
+            Class<?> catalog = Class.forName("visiblehelicopter.AircraftCatalog");
+            int index = ((Number) catalog.getMethod("index", String.class).invoke(null, aircraftId)).intValue();
+            Object[] aircraft = (Object[]) catalog.getField("ALL").get(null);
+            if (index >= 0 && index < aircraft.length) {
+                return ((Number) aircraft[index].getClass().getMethod("lift").invoke(aircraft[index])).floatValue();
+            }
+        } catch (ReflectiveOperationException | RuntimeException ignored) {
+        }
+        return modelLift;
     }
 }

@@ -15,6 +15,14 @@ public final class Bridge {
     private Bridge() {
     }
 
+    public static void registerFtzAircraft() {
+        FtzAircraftCatalog.install();
+    }
+
+    public static void configureFtzAircraft(boolean hummingbird, boolean orca, boolean hellcat) {
+        FtzAircraftCatalog.configure(hummingbird, orca, hellcat);
+    }
+
     public static void suppressNative(boolean suppress) {
         suppressNative = suppress;
     }
@@ -52,8 +60,8 @@ public final class Bridge {
     }
 
     public static void rope(String id, double x, double y, double groundX, double groundY, double groundHeight,
-            double flightHeight, double progress, double alpha) {
-        ExtractionRope.add(id, x, y, groundX, groundY, groundHeight, flightHeight, progress, alpha);
+            double flightHeight, double progress, double alpha, String aircraftId) {
+        ExtractionRope.add(id, x, y, groundX, groundY, groundHeight, flightHeight, progress, alpha, aircraftId);
     }
 
     public static void endRopes() {

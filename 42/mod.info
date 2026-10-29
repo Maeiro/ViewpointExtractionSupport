@@ -1,11 +1,11 @@
 name=Viewpoint Extraction Support
 id=ViewpointExtractionSupport
 author=Maeiro
-description=Visible UH-1B extraction helicopters, positional audio, a simulated 3D extraction rope and 3D boarding areas in Project Viewpoint. Follows Extraction Mode's approach and boarding stages using Visible Helicopter Events.
-modversion=0.1.14
+description=Visible configurable extraction helicopters, positional audio, a simulated 3D extraction rope and 3D boarding areas in Project Viewpoint. Follows Extraction Mode's approach and boarding stages using Visible Helicopter Events.
+modversion=0.1.15
 versionMin=42.21.0
-require=ExtractionMode,Viewpoint,ZombieBuddy,VisibleHelicopterEvent,UH-1BHelicopter,AviationCore
-loadModAfter=ExtractionMode,VisibleHelicopterEvent,UH-1BHelicopter,AviationCore
+require=ExtractionMode,Viewpoint,ZombieBuddy,VisibleHelicopterEvent
+loadModAfter=ExtractionMode,VisibleHelicopterEvent
 javaJarFile=media/java/client/ViewpointExtractionSupport.jar
 javaPkgName=maeiro.viewpointextractionsupport
 ZBVersionMin=2.3.4

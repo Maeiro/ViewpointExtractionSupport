@@ -12,6 +12,7 @@ ViewpointExtractionSupport = Support
 
 local onlyWithInventory
 local useNeatUI
+local selectedAircraft = {}
 local interactionTicks = 0
 local function installInteraction()
     interactionTicks = interactionTicks + 1
@@ -42,6 +43,23 @@ onlyWithInventory = options:addTickBox("onlyWithInventory", "UI_ViewpointExtract
     "UI_ViewpointExtractionSupport_OnlyWithInventoryTooltip")
 useNeatUI = options:addTickBox("useNeatUI", "UI_ViewpointExtractionSupport_UseNeatUI", true,
     "UI_ViewpointExtractionSupport_UseNeatUITooltip")
+local aircraftChoices = {
+    { id = "UH-1BHelicopter", key = "UH1B", default = true },
+    { id = "AircraftMod", key = "Nightfang" },
+    { id = "LittleBird", key = "LittleBird" },
+    { id = "Chinook", key = "Chinook" },
+    { id = "BlackHawk", key = "BlackHawk" },
+    { id = "AH1SuperCobra", key = "SuperCobra" },
+    { id = "UH1", key = "UH1" },
+    { id = "FTZ_Hummingbird", key = "FTZHummingbird" },
+    { id = "FTZ_Orca", key = "FTZOrca" },
+    { id = "FTZ_Hellcat", key = "FTZHellcat" },
+}
+for _, choice in ipairs(aircraftChoices) do
+    choice.option = options:addTickBox("aircraft_" .. choice.key,
+        "UI_ViewpointExtractionSupport_Aircraft_" .. choice.key,
+        choice.default == true, "UI_ViewpointExtractionSupport_AircraftTooltip_" .. choice.key)
+end
 HudVisibility.install(onlyWithInventory)
 NeatUI.sync(useNeatUI)
 
@@ -57,7 +75,7 @@ local function clearFlights()
         ViewpointExtractionSupportBridge.clearNativeAudioPosition()
         ViewpointExtractionSupportBridge.clearRopes()
     end
-    runtime, submitted = Flights.new(), {}
+    runtime, submitted, selectedAircraft = Flights.new(), {}, {}
 end
 
 function Support.reset()
@@ -121,12 +139,32 @@ end
 local function collect()
     local renderer = VisibleHelicopterEvent
     if not renderer or not renderer.active() or not getSpecificPlayer(0) then
+        if ViewpointExtractionSupportBridge then
+            ViewpointExtractionSupportBridge.configureFtzAircraft(false, false, false)
+        end
         if not renderer or not getSpecificPlayer(0) then Support.reset() else clearFlights() end
         return
     end
 
+    local featureEnabled = enabled:getValue()
+    if ViewpointExtractionSupportBridge then
+        ViewpointExtractionSupportBridge.registerFtzAircraft()
+        ViewpointExtractionSupportBridge.configureFtzAircraft(
+            featureEnabled and aircraftChoices[8].option:getValue(),
+            featureEnabled and aircraftChoices[9].option:getValue(),
+            featureEnabled and aircraftChoices[10].option:getValue())
+    end
+    local availableAircraft, allowedAircraft = {}, {}
+    if featureEnabled then
+        for _, choice in ipairs(aircraftChoices) do
+            if choice.option:getValue() and renderer.modelAvailable(choice.id) then
+                availableAircraft[#availableAircraft + 1] = choice.id
+                allowedAircraft[choice.id] = true
+            end
+        end
+    end
     local pickups = pickupsForPlayers(getTimestampMs())
-    if not enabled:getValue() or not renderer.modelAvailable("UH-1BHelicopter") then
+    if not featureEnabled or #availableAircraft == 0 then
         clearFlights()
         return
     end
@@ -143,11 +181,16 @@ local function collect()
     local player = getSpecificPlayer(0)
     ViewpointExtractionSupportBridge.beginRopes()
     for _, pose in ipairs(poses) do
-        renderer.modelFlight(pose.id, pose.x, pose.y, pose.height, pose.heading, "UH-1BHelicopter")
+        local aircraftId = selectedAircraft[pose.id]
+        if not allowedAircraft[aircraftId] then
+            aircraftId = availableAircraft[ZombRand(#availableAircraft) + 1]
+            selectedAircraft[pose.id] = aircraftId
+        end
+        renderer.modelFlight(pose.id, pose.x, pose.y, pose.height, pose.heading, aircraftId)
         renderer.flightAlpha(pose.id, pose.alpha)
         ViewpointExtractionSupportBridge.rope(
             pose.id, pose.x, pose.y, pose.ropeX, pose.ropeY, pose.groundHeight,
-            pose.height, pose.ropeProgress, pose.alpha)
+            pose.height, pose.ropeProgress, pose.alpha, aircraftId)
         desired[pose.id] = true
         if pose.native and pose.alpha >= 0.99 and renderer.flightReady(pose.id) then suppressNative = true end
         if pose.native then
@@ -162,6 +205,9 @@ local function collect()
         if not desired[id] then renderer.removeFlight(id) end
     end
     submitted = desired
+    for id in pairs(selectedAircraft) do
+        if not desired[id] then selectedAircraft[id] = nil end
+    end
     ViewpointExtractionSupportBridge.suppressNative(suppressNative)
     if audioPose and renderer.directional() then
         ViewpointExtractionSupportBridge.nativeAudioPosition(audioPose.x, audioPose.y, audioPose.height)

@@ -1,8 +1,8 @@
 # Viewpoint Extraction Support
 
-Displays a UH-1B helicopter during Extraction Mode pickups in Project Viewpoint. The aircraft approaches the selected extraction point during the final approach countdown, lowers a 3D rope as it settles into a hover, and flies away with the rope retracting when the pickup ends or is cancelled. A translucent yellow cylindrical marker identifies the boarding area in the 3D world.
+Displays a randomly selected, enabled aircraft during Extraction Mode pickups in Project Viewpoint. The aircraft approaches the selected extraction point during the final approach countdown, lowers a 3D rope as it settles into a hover, and flies away with the rope retracting when the pickup ends or is cancelled. A translucent yellow cylindrical marker identifies the boarding area in the 3D world.
 
-This is a compatibility addon for **Visible Helicopter Events**. It uses that mod's existing renderer and the enabled UH-1B assets; no third-party models, textures or renderer code are redistributed.
+This is a compatibility addon for **Visible Helicopter Events**. It uses that mod's existing renderer and the selected aircraft assets; no third-party models, textures or renderer code are redistributed.
 
 ## Requirements
 
@@ -11,8 +11,9 @@ This is a compatibility addon for **Visible Helicopter Events**. It uses that mo
 - [Project Viewpoint](https://steamcommunity.com/sharedfiles/filedetails/?id=3809306528).
 - ZombieBuddy 2.3.4+.
 - [Project Viewpoint - Visible Helicopter Events](https://steamcommunity.com/sharedfiles/filedetails/?id=3819322670) (initial integration targets 1.3.7).
-- [UH-1B Helicopter](https://steamcommunity.com/sharedfiles/filedetails/?id=3409723807).
-- [Aviation Core](https://steamcommunity.com/sharedfiles/filedetails/?id=3783444342).
+- Aircraft are optional. Enable only the aircraft mods you want to use, then select those aircraft in this addon's options. An aircraft is used only when its checkbox is selected and its model assets are available.
+- Optional aircraft supported by Visible Helicopter Events: UH-1B Helicopter (also needs Aviation Core), MH-92 Nightfang (`AircraftMod`), Little Bird (`LittleBird`), Chinook (`Chinook`), Black Hawk (`BlackHawk`), UH-1 Huey (`UH1`), and AH-1 SuperCobra (`AH1SuperCobra`).
+- Optional FTZ aircraft: Hummingbird, Orca and Hellcat from [FTZ Helicopters](https://steamcommunity.com/sharedfiles/filedetails/?id=3825500218), which also requires [FTZ Flying](https://steamcommunity.com/sharedfiles/filedetails/?id=3825500587). These three models are registered into the existing Visible Helicopter Events renderer at runtime. Selecting an FTZ model also makes it available to Visible Helicopter Events' own random model selection when that setting is enabled.
 
 Enable these mods and **Viewpoint Extraction Support**, then restart the game to load its Java hooks. Keep **Show event aircraft** enabled in Visible Helicopter Events. Signal a pickup using Extraction Mode's normal controls; the final approach normally begins with 30 seconds remaining. The campaign handoff uses its own 60-second approach window.
 
@@ -25,6 +26,7 @@ In **Mod Options > Viewpoint Extraction Support**:
 - **Show extraction area in 3D**: enabled by default. Displays every known extraction point as a yellow cylinder fading toward its top, even before a pickup is active. During boarding, the active rope's authoritative interaction radius replaces the point marker. This option works independently of the addon's helicopter display option. The matching extraction arrow is hidden in Viewpoint when the marker is rendered.
 - **Show Extraction Mode HUD only with inventory open**: disabled by default. When enabled, hides Extraction Mode's top panel unless the player inventory, loot window or supported inventory interface is open.
 - **Use NeatUI styling for Extraction Mode menus**: enabled by default. When `NeatUI_Framework` is installed, applies its panel and button styling to the Extraction Mode HUD and menus. If NeatUI is missing, the normal Extraction Mode interface is used automatically; disabling this option always uses the normal interface.
+- **Aircraft selection**: UH-1B is enabled by default to preserve the previous behavior. Other aircraft are off by default. Each extraction flight randomly selects one of the checked aircraft whose assets are currently available. If none of the selected models are available, the addon does not create a helicopter for that flight.
 
 English and Brazilian Portuguese interface text is included. Extraction timing, boarding interactions, zombie attraction and sound playback remain owned by Extraction Mode. With Viewpoint's directional aircraft audio enabled, the original native helicopter recording follows the extraction model's position and altitude. This addon creates visual aircraft, not physical vehicles or extra extraction destinations.
 
@@ -68,6 +70,6 @@ python tests/run.py --visible-helicopter-root 'D:\SteamLibrary\steamapps\worksho
 
 It covers authoritative site selection, interpolated countdowns, delayed packets, approach/hover/departure, elevated sites, cancellation, duplicate observers, simultaneous raids, readiness fallback, disabled/missing dependencies, stale multiplayer state and cleanup without removing other mods' aircraft. Audio checks reuse the installed renderer's attenuation code with FMOD and listener fixtures to verify model coordinates, terrain/altitude conversion, hearing rules, isometric behavior and reuse of the existing event. Marker checks submit to the installed Viewpoint decal batch and verify a closed cylinder, inside/outside faces, radius, gradient UVs, camera motion, elevated floors, unavailable assets and independent option handling. Arrow checks cover destination/texture matching, isometric fallback, original active state and restoration after drawing.
 
-Helicopter visibility, flight animation and native directional extraction audio have been manually verified in single-player with the required mods enabled. The new cylindrical marker, arrow filtering and multiplayer behavior still require an in-game test.
+The UH-1B flight, rope, positional audio and extraction markers have been manually verified in single-player. The optional aircraft model integrations, including FTZ aircraft, still need an in-game visual check. Multiplayer behavior also remains to be verified.
 
-Credits: Zakreon (Extraction Mode), 50ShadesOfMyCow (Visible Helicopter Events), User (UH-1B Helicopter), and the authors of Project Viewpoint, ZombieBuddy and Aviation Core.
+Credits: Zakreon (Extraction Mode), 50ShadesOfMyCow (Visible Helicopter Events), User (UH-1B Helicopter), the FTZ Helicopters authors, and the authors of Project Viewpoint, ZombieBuddy and Aviation Core.
