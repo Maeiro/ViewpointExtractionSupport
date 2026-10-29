@@ -55,6 +55,7 @@ local function clearFlights()
     if ViewpointExtractionSupportBridge then
         ViewpointExtractionSupportBridge.suppressNative(false)
         ViewpointExtractionSupportBridge.clearNativeAudioPosition()
+        ViewpointExtractionSupportBridge.clearRopes()
     end
     runtime, submitted = Flights.new(), {}
 end
@@ -140,9 +141,13 @@ local function collect()
         })
     local desired, suppressNative, audioPose, audioDistance = {}, false, nil, nil
     local player = getSpecificPlayer(0)
+    ViewpointExtractionSupportBridge.beginRopes()
     for _, pose in ipairs(poses) do
         renderer.modelFlight(pose.id, pose.x, pose.y, pose.height, pose.heading, "UH-1BHelicopter")
         renderer.flightAlpha(pose.id, pose.alpha)
+        ViewpointExtractionSupportBridge.rope(
+            pose.id, pose.x, pose.y, pose.ropeX, pose.ropeY, pose.groundHeight,
+            pose.height, pose.ropeProgress, pose.alpha)
         desired[pose.id] = true
         if pose.native and pose.alpha >= 0.99 and renderer.flightReady(pose.id) then suppressNative = true end
         if pose.native then
@@ -152,6 +157,7 @@ local function collect()
             end
         end
     end
+    ViewpointExtractionSupportBridge.endRopes()
     for id in pairs(submitted) do
         if not desired[id] then renderer.removeFlight(id) end
     end

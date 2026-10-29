@@ -1,6 +1,6 @@
 # Viewpoint Extraction Support
 
-Displays a UH-1B helicopter during Extraction Mode pickups in Project Viewpoint. The aircraft approaches the selected extraction point during the final approach countdown, descends to a hover for boarding, and flies away when the pickup ends or is cancelled. A translucent yellow cylindrical marker identifies the boarding area in the 3D world.
+Displays a UH-1B helicopter during Extraction Mode pickups in Project Viewpoint. The aircraft approaches the selected extraction point during the final approach countdown, lowers a 3D rope as it settles into a hover, and flies away with the rope retracting when the pickup ends or is cancelled. A translucent yellow cylindrical marker identifies the boarding area in the 3D world.
 
 This is a compatibility addon for **Visible Helicopter Events**. It uses that mod's existing renderer and the enabled UH-1B assets; no third-party models, textures or renderer code are redistributed.
 
@@ -39,6 +39,8 @@ A small ZombieBuddy hook submits the addon flights immediately before `visiblehe
 The code runs on clients and consumes Extraction Mode's existing synchronization. In multiplayer the addon still has to be loaded by the session's mod configuration; persistence across a Lua reset on servers that omit the addon has not been implemented or verified.
 
 Extraction point areas use the server-supplied site coordinates and radius and remain visible while the site is inactive. An active boarding rope temporarily replaces the matching point with its authoritative boarding radius. A 32-segment cylinder, 2.2 metres high, uses a small alpha-gradient texture in Viewpoint's decal batch. Its vertical segments follow terrain relief instead of relying on a single flat circle that can intersect uneven terrain. Both surface orientations are submitted to support viewpoints inside and outside the marker. It is added after the regular decal snapshot, including when blood decals are disabled, and does not create world objects or blood data. Areas are drawn only within 100 tiles on a loaded floor.
+
+The extraction rope starts as a small coil beneath the helicopter, unspools during the final approach, reaches the extraction floor while boarding, and retracts as the aircraft departs. Viewpoint renders it as a six-sided 3D tube whose 12 constrained segments respond to gravity, wind and ground contact. This is a client-side visual simulation: it does not create a world object, add server physics, or change boarding rules. Its texture and geometry are included with this addon.
 
 Arrow filtering tracks arrows created with Extraction Mode's `Item_Rope2` texture, then checks their exact destination against successfully rendered boarding areas. Only their draw-time active state is temporarily changed, with restoration on method exit. Isometric arrows, other destinations, inactive arrows and unrelated arrow textures retain their existing behavior. A missing marker texture or full render batch leaves the original extraction arrow available. Boarding input remains managed by Extraction Mode.
 

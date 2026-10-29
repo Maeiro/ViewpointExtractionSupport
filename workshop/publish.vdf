@@ -1,0 +1,14 @@
+"workshopitem"
+{
+    "appid" "108600"
+    "publishedfileid" "3827358939"
+    "contentfolder" "D:\\SteamCMD\\workshop\\ViewpointExtractionSupport\\content"
+    "previewfile" "D:\\SteamCMD\\workshop\\ViewpointExtractionSupport\\preview.gif"
+    "visibility" "0"
+    "title" "Viewpoint Extraction Support"
+    "description" "[h1]Viewpoint Extraction Support[/h1] Displays a UH-1B extraction helicopter in Project Viewpoint while using Extraction Mode. [h2]Features[/h2] [list][*]Shows the UH-1B during the final approach, boarding and departure stages.[*]Adds positional extraction audio in Viewpoint while preserving the original Extraction Mode and Visible Helicopter Events behavior.[*]Shows extraction areas in the 3D world, including terrain-following yellow boarding markers.[*]Keeps extraction points visible before an event is active and exposes Board Extraction Helicopter through Viewpoint when boarding is available.[*]Optionally hides the Extraction Mode HUD unless an inventory or loot window is open.[*]Optionally applies NeatUI styling to Extraction Mode menus when NeatUI_Framework is installed; the normal interface remains available through Mod Options.[/list] [h2]Requirements[/h2] [list][*]Project Zomboid Build 42.21+[*]Extraction Mode[*]Project Viewpoint[*]ZombieBuddy 2.3.4+[*]Visible Helicopter Events[*]UH-1B Helicopter[*]Aviation Core[/list] Keep Show event aircraft enabled in Visible Helicopter Events. Extraction timing, boarding rules, zombie attraction and server synchronization remain owned by Extraction Mode.
+
+Workshop ID: 3827358939
+Mod ID: ViewpointExtractionSupport"
+    "changenote" "0.1.13: Add optional NeatUI menus with rounded extraction buttons."
+}

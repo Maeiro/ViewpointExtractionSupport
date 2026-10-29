@@ -1,0 +1,30 @@
+newmtl hemp_light
+Kd 0.7200 0.6700 0.5100
+Ka 0.08 0.08 0.08
+Ks 0.05 0.05 0.05
+Ns 8
+
+newmtl hemp_mid
+Kd 0.5700 0.5800 0.4300
+Ka 0.08 0.08 0.08
+Ks 0.05 0.05 0.05
+Ns 8
+
+newmtl hemp_dark
+Kd 0.4200 0.4700 0.3500
+Ka 0.08 0.08 0.08
+Ks 0.05 0.05 0.05
+Ns 8
+
+newmtl hardware
+Kd 0.2200 0.2600 0.2800
+Ka 0.08 0.08 0.08
+Ks 0.05 0.05 0.05
+Ns 8
+
+newmtl hardware_edge
+Kd 0.4800 0.4900 0.4500
+Ka 0.08 0.08 0.08
+Ks 0.05 0.05 0.05
+Ns 8
+

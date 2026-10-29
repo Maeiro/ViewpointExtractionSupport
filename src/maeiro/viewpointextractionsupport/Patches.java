@@ -34,7 +34,16 @@ public final class Patches {
     public static class ExtractionGroundAreas {
         @Patch.OnExit
         public static void exit(@Patch.Argument(0) Object frame, @Patch.Argument(1) Object cell) {
+            ExtractionRope.capture(frame);
             GroundAreas.capture(frame, cell);
+        }
+    }
+
+    @Patch(className = "viewpoint.render.WorldRenderer", methodName = "drawWeather", warmUp = true)
+    public static class ExtractionRopeVisual {
+        @Patch.OnExit
+        public static void exit(@Patch.Argument(0) Object scene) {
+            RopeRenderer.draw(scene);
         }
     }
 

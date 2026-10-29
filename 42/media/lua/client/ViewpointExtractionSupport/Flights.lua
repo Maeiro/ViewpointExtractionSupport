@@ -4,6 +4,8 @@ local STOREY_METRES = 2.4494896
 local APPROACH_DISTANCE = 240
 local DEPARTURE_DISTANCE = 400
 local DEPARTURE_MS = 8000
+local ROPE_DEPLOY_START = 0.92
+local ROPE_RETRACT_TIME = 0.18
 
 local function clamp(value, low, high)
     return math.max(low, math.min(high, value))
@@ -70,11 +72,16 @@ local function activePose(entry, info, now, settings)
     local hover = info.ground + settings.hoverHeight
     local cruise = info.ground + math.max(settings.cruiseHeight, settings.hoverHeight + 12)
     local bob = math.sin(now / 850) * 0.15 * smooth((t - 0.8) / 0.2)
+    local ropeProgress = info.boarding and 1 or smooth((t - ROPE_DEPLOY_START) / (1 - ROPE_DEPLOY_START))
     return {
         id = info.id,
         x = info.x - math.cos(info.angle) * distance,
         y = info.y - math.sin(info.angle) * distance,
         height = cruise + (hover - cruise) * smooth(t) + bob,
+        ropeX = info.x,
+        ropeY = info.y,
+        groundHeight = info.ground,
+        ropeProgress = ropeProgress,
         heading = info.angle,
         alpha = clamp((now - entry.firstSeen) / 700, 0, 1),
         native = info.native,
@@ -91,6 +98,10 @@ local function departurePose(entry, now, settings)
         x = from.x + math.cos(from.heading) * distance,
         y = from.y + math.sin(from.heading) * distance,
         height = from.height + math.max(30, settings.cruiseHeight - settings.hoverHeight) * smooth(t),
+        ropeX = from.ropeX,
+        ropeY = from.ropeY,
+        groundHeight = from.groundHeight,
+        ropeProgress = from.ropeProgress * (1 - smooth(t / ROPE_RETRACT_TIME)),
         heading = from.heading,
         alpha = from.alpha * (1 - smooth((t - 0.75) / 0.25)),
         native = false,

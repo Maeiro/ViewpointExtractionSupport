@@ -47,6 +47,23 @@ public final class Bridge {
         GroundAreas.clear();
     }
 
+    public static void beginRopes() {
+        ExtractionRope.begin();
+    }
+
+    public static void rope(String id, double x, double y, double groundX, double groundY, double groundHeight,
+            double flightHeight, double progress, double alpha) {
+        ExtractionRope.add(id, x, y, groundX, groundY, groundHeight, flightHeight, progress, alpha);
+    }
+
+    public static void endRopes() {
+        ExtractionRope.end();
+    }
+
+    public static void clearRopes() {
+        ExtractionRope.clear();
+    }
+
     public static void collectFlights() {
         try {
             if (triggerEvent == null) {
