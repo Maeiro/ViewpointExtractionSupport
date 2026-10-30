@@ -65,15 +65,39 @@ NeatUI.sync(useNeatUI)
 
 local runtime, submitted, observations = Flights.new(), {}, {}
 local warned = false
+local warnedBridge = false
+
+local bridgeMethods = {
+    "registerFtzAircraft", "configureFtzAircraft", "suppressNative", "clearNativeAudioPosition",
+    "clearRopes", "clearAreas", "beginAreas", "area", "endAreas", "beginRopes", "rope",
+    "endRopes", "nativeAudioPosition",
+}
+
+local function getBridge()
+    local bridge = ViewpointExtractionSupportBridge
+    if not bridge then return nil end
+
+    for _, name in ipairs(bridgeMethods) do
+        if bridge[name] == nil then
+            if not warnedBridge then
+                warnedBridge = true
+                print("[Viewpoint Extraction Support] The Java bridge is outdated (missing " .. name .. "). Restart the game to load the installed mod version.")
+            end
+            return nil
+        end
+    end
+    return bridge
+end
 
 local function clearFlights()
     if VisibleHelicopterEvent then
         for id in pairs(submitted) do VisibleHelicopterEvent.removeFlight(id) end
     end
-    if ViewpointExtractionSupportBridge then
-        ViewpointExtractionSupportBridge.suppressNative(false)
-        ViewpointExtractionSupportBridge.clearNativeAudioPosition()
-        ViewpointExtractionSupportBridge.clearRopes()
+    local bridge = getBridge()
+    if bridge then
+        bridge.suppressNative(false)
+        bridge.clearNativeAudioPosition()
+        bridge.clearRopes()
     end
     runtime, submitted, selectedAircraft = Flights.new(), {}, {}
 end
@@ -82,7 +106,8 @@ function Support.reset()
     clearFlights()
     interaction.clear()
     observations = {}
-    if ViewpointExtractionSupportBridge then ViewpointExtractionSupportBridge.clearAreas() end
+    local bridge = getBridge()
+    if bridge then bridge.clearAreas() end
 end
 
 local function pickupsForPlayers(wallNow, includeLocalState)
@@ -122,38 +147,41 @@ local function pickupsForPlayers(wallNow, includeLocalState)
 end
 
 local function refreshAreas()
-    if not ViewpointExtractionSupportBridge or not getSpecificPlayer(0) then
-        if ViewpointExtractionSupportBridge then ViewpointExtractionSupportBridge.clearAreas() end
+    local bridge = getBridge()
+    if not bridge or not getSpecificPlayer(0) then
+        if bridge then bridge.clearAreas() end
         return
     end
 
-    ViewpointExtractionSupportBridge.beginAreas()
+    bridge.beginAreas()
     if showArea:getValue() then
         for _, area in ipairs(Areas.collect(pickupsForPlayers(getTimestampMs(), true))) do
-            ViewpointExtractionSupportBridge.area(area.x, area.y, area.z, area.radius)
+            bridge.area(area.x, area.y, area.z, area.radius)
         end
     end
-    ViewpointExtractionSupportBridge.endAreas()
+    bridge.endAreas()
 end
 
 local function collect()
+    local bridge = getBridge()
+    if not bridge then
+        clearFlights()
+        return
+    end
+
     local renderer = VisibleHelicopterEvent
     if not renderer or not renderer.active() or not getSpecificPlayer(0) then
-        if ViewpointExtractionSupportBridge then
-            ViewpointExtractionSupportBridge.configureFtzAircraft(false, false, false)
-        end
+        bridge.configureFtzAircraft(false, false, false)
         if not renderer or not getSpecificPlayer(0) then Support.reset() else clearFlights() end
         return
     end
 
     local featureEnabled = enabled:getValue()
-    if ViewpointExtractionSupportBridge then
-        ViewpointExtractionSupportBridge.registerFtzAircraft()
-        ViewpointExtractionSupportBridge.configureFtzAircraft(
-            featureEnabled and aircraftChoices[8].option:getValue(),
-            featureEnabled and aircraftChoices[9].option:getValue(),
-            featureEnabled and aircraftChoices[10].option:getValue())
-    end
+    bridge.registerFtzAircraft()
+    bridge.configureFtzAircraft(
+        featureEnabled and aircraftChoices[8].option:getValue(),
+        featureEnabled and aircraftChoices[9].option:getValue(),
+        featureEnabled and aircraftChoices[10].option:getValue())
     local availableAircraft, allowedAircraft = {}, {}
     if featureEnabled then
         for _, choice in ipairs(aircraftChoices) do
@@ -179,7 +207,7 @@ local function collect()
         })
     local desired, suppressNative, audioPose, audioDistance = {}, false, nil, nil
     local player = getSpecificPlayer(0)
-    ViewpointExtractionSupportBridge.beginRopes()
+    bridge.beginRopes()
     for _, pose in ipairs(poses) do
         local aircraftId = selectedAircraft[pose.id]
         if not allowedAircraft[aircraftId] then
@@ -188,7 +216,7 @@ local function collect()
         end
         renderer.modelFlight(pose.id, pose.x, pose.y, pose.height, pose.heading, aircraftId)
         renderer.flightAlpha(pose.id, pose.alpha)
-        ViewpointExtractionSupportBridge.rope(
+        bridge.rope(
             pose.id, pose.x, pose.y, pose.ropeX, pose.ropeY, pose.groundHeight,
             pose.height, pose.ropeProgress, pose.alpha, aircraftId)
         desired[pose.id] = true
@@ -200,7 +228,7 @@ local function collect()
             end
         end
     end
-    ViewpointExtractionSupportBridge.endRopes()
+    bridge.endRopes()
     for id in pairs(submitted) do
         if not desired[id] then renderer.removeFlight(id) end
     end
@@ -208,11 +236,11 @@ local function collect()
     for id in pairs(selectedAircraft) do
         if not desired[id] then selectedAircraft[id] = nil end
     end
-    ViewpointExtractionSupportBridge.suppressNative(suppressNative)
+    bridge.suppressNative(suppressNative)
     if audioPose and renderer.directional() then
-        ViewpointExtractionSupportBridge.nativeAudioPosition(audioPose.x, audioPose.y, audioPose.height)
+        bridge.nativeAudioPosition(audioPose.x, audioPose.y, audioPose.height)
     else
-        ViewpointExtractionSupportBridge.clearNativeAudioPosition()
+        bridge.clearNativeAudioPosition()
     end
 end
 
@@ -229,7 +257,8 @@ end
 
 options.apply = function()
     if not enabled:getValue() then clearFlights() end
-    if not showArea:getValue() and ViewpointExtractionSupportBridge then ViewpointExtractionSupportBridge.clearAreas() end
+    local bridge = getBridge()
+    if not showArea:getValue() and bridge then bridge.clearAreas() end
     HudVisibility.install(onlyWithInventory)
     NeatUI.sync(useNeatUI)
     if ExtractionMode.UIVisibility then ExtractionMode.UIVisibility.updateHUD() end
