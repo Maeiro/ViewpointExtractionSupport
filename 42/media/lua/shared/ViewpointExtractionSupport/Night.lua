@@ -3,6 +3,7 @@ local Night = {
     isNight = false,
     nightCycle = 0,
     level = 1,
+    levelReady = false,
     lootBonusPercent = 0,
     sprinterPercentage = 0,
 }
@@ -68,9 +69,9 @@ local function getNightLevel(cycle, levels)
     if isClient() then
         local data = ModData.get(nightDataKey)
         if data and tonumber(data.nightCycle) == cycle then
-            return clampSetting(data.level, 1, 4, 1)
+            return clampSetting(data.level, 1, 4, 1), true
         end
-        return 1
+        return 1, false
     end
 
     local data = ModData.getOrCreate(nightDataKey)
@@ -81,7 +82,7 @@ local function getNightLevel(cycle, levels)
             ModData.transmit(nightDataKey)
         end
     end
-    return clampSetting(data.level, 1, 4, 1)
+    return clampSetting(data.level, 1, 4, 1), true
 end
 
 local function refresh()
@@ -92,7 +93,11 @@ local function refresh()
     Night.isNight = gameTime:isNight()
     Night.nightCycle = getNightCycle(gameTime)
     Night.levels = getLevels(settings)
-    Night.level = Night.enabled and Night.isNight and getNightLevel(Night.nightCycle, Night.levels) or 1
+    Night.level = 1
+    Night.levelReady = false
+    if Night.enabled and Night.isNight then
+        Night.level, Night.levelReady = getNightLevel(Night.nightCycle, Night.levels)
+    end
 
     local selectedLevel = Night.levels[Night.level]
     Night.lootBonusPercent = Night.enabled and Night.isNight and selectedLevel.lootBonusPercent or 0

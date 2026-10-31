@@ -10,6 +10,7 @@ local NeatUI = require "ViewpointExtractionSupport/NeatUI"
 require "ViewpointExtractionSupport/CountdownNotice"
 require "ViewpointExtractionSupport/Night"
 require "ViewpointExtractionSupport/NightMoodle"
+require "ViewpointExtractionSupport/EventNotifications"
 local Support = {}
 ViewpointExtractionSupport = Support
 

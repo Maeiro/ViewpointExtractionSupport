@@ -27,6 +27,7 @@ In **Mod Options > Viewpoint Extraction Support**:
 - **Show Extraction Mode HUD only with inventory open**: disabled by default. When enabled, hides Extraction Mode's top panel unless the player inventory, loot window or supported inventory interface is open.
 - **Use NeatUI styling for Extraction Mode menus**: enabled by default. When `NeatUI_Framework` is installed, applies its panel and button styling to the Extraction Mode HUD and menus. If NeatUI is missing, the normal Extraction Mode interface is used automatically; disabling this option always uses the normal interface.
 - During a deployment countdown, a green on-screen notice repeats the destination and remaining seconds, updating as the timer counts down.
+- When night events are enabled, colored warnings communicate the danger of the night and announce dawn. During an active raid, an amber radio warning appears once when the next horde is within one in-game hour.
 - **Aircraft selection**: UH-1B is enabled by default to preserve the previous behavior. Other aircraft are off by default. Each extraction flight randomly selects one of the checked aircraft whose assets are currently available. If none of the selected models are available, the addon does not create a helicopter for that flight.
 
 In **Sandbox Options > Viewpoint Extraction Support: Night Events**:
