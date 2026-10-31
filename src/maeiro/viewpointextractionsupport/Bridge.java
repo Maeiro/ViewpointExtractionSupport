@@ -11,6 +11,9 @@ public final class Bridge {
     private static volatile boolean suppressNative;
     private static volatile float nightLootMultiplier = 1.0f;
     private static volatile boolean nightLuckMoodleActive;
+    private static volatile int activeNightLuckLevel = 1;
+    private static volatile int activeNightLootBonus;
+    private static volatile int activeNightSprinterPercentage;
     private static volatile boolean nightMoodleRefreshNeeded;
     private static boolean warned;
 
@@ -61,15 +64,21 @@ public final class Bridge {
         GroundAreas.clear();
     }
 
-    public static void setNightFeatureState(boolean enabled, int lootBonusPercent, boolean isNight) {
+    public static void setNightFeatureState(boolean enabled, int lootBonusPercent, boolean isNight, int moodleLevel,
+            int sprinterPercentage) {
         int bonus = Math.max(0, Math.min(500, lootBonusPercent));
+        int level = Math.max(1, Math.min(4, moodleLevel));
+        int sprinters = Math.max(0, Math.min(100, sprinterPercentage));
         nightLootMultiplier = enabled && isNight ? 1.0f + bonus / 100.0f : 1.0f;
+        activeNightLootBonus = enabled && isNight ? bonus : 0;
+        activeNightSprinterPercentage = enabled && isNight ? sprinters : 0;
 
         boolean moodleActive = enabled && isNight && bonus > 0;
-        if (nightLuckMoodleActive != moodleActive) {
+        if (nightLuckMoodleActive != moodleActive || (moodleActive && activeNightLuckLevel != level)) {
             nightLuckMoodleActive = moodleActive;
             nightMoodleRefreshNeeded = true;
         }
+        activeNightLuckLevel = level;
     }
 
     public static float scaleNightLootChance(float chance, Object container) {
@@ -80,11 +89,19 @@ public final class Bridge {
     }
 
     public static int nightLuckMoodleLevel(Object moodle, int level) {
-        return nightLuckMoodleActive && isNightLuckMoodle(moodle) ? 1 : level;
+        return nightLuckMoodleActive && isNightLuckMoodle(moodle) ? activeNightLuckLevel : level;
     }
 
     public static int nightLuckMoodleGoodBadNeutral(Object moodleType, int value) {
         return nightLuckMoodleActive && isNightLuckMoodleType(moodleType) ? 1 : value;
+    }
+
+    public static String nightLuckMoodleDescription(Object moodleType, String description) {
+        if (!nightLuckMoodleActive || !isNightLuckMoodleType(moodleType) || description == null) {
+            return description;
+        }
+        return description.replace("{loot}", activeNightLootBonus + "%")
+                .replace("{sprinters}", activeNightSprinterPercentage + "%");
     }
 
     public static boolean nightMoodleRefresh(boolean refreshNeeded) {

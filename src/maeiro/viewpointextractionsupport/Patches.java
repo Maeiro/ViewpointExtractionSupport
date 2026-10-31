@@ -84,6 +84,14 @@ public final class Patches {
         }
     }
 
+    @Patch(className = "zombie.characters.Moodles.Moodles", methodName = "getMoodleDescriptionString", warmUp = true)
+    public static class NightLuckMoodleDescription {
+        @Patch.OnExit
+        public static void exit(@Patch.Argument(0) Object moodleType, @Patch.Return(readOnly = false) String result) {
+            result = Bridge.nightLuckMoodleDescription(moodleType, result);
+        }
+    }
+
     @Patch(className = "zombie.characters.Moodles.Moodles", methodName = "getGoodBadNeutral", warmUp = true)
     public static class NightLuckMoodleAlignment {
         @Patch.OnExit

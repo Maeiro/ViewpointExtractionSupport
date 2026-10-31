@@ -1,8 +1,8 @@
 name=Viewpoint Extraction Support
 id=ViewpointExtractionSupport
 author=Maeiro
-description=Visible configurable extraction helicopters, positional audio, a simulated 3D extraction rope, 3D boarding areas and optional night loot and sprinter settings in Project Viewpoint.
-modversion=0.1.16
+description=Visible configurable extraction helicopters, positional audio, a simulated 3D extraction rope, 3D boarding areas, optional night luck levels and sprinters, and on-screen deployment countdown alerts.
+modversion=0.1.18
 versionMin=42.21.0
 require=ExtractionMode,Viewpoint,ZombieBuddy,VisibleHelicopterEvent
 loadModAfter=ExtractionMode,VisibleHelicopterEvent
