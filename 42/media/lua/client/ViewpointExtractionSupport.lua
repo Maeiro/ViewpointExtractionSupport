@@ -7,6 +7,8 @@ local Areas = require "ViewpointExtractionSupport/Areas"
 local interaction = require "ViewpointExtractionSupport/Interaction"
 local HudVisibility = require "ViewpointExtractionSupport/HudVisibility"
 local NeatUI = require "ViewpointExtractionSupport/NeatUI"
+require "ViewpointExtractionSupport/Night"
+require "ViewpointExtractionSupport/NightMoodle"
 local Support = {}
 ViewpointExtractionSupport = Support
 

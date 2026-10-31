@@ -1,0 +1,29 @@
+VERSION = 1,
+
+option ViewpointExtractionSupport.NightMode
+{
+    type = boolean,
+    default = false,
+    page = ViewpointExtractionSupport_NightPage,
+    translation = ViewpointExtractionSupport.NightMode,
+}
+
+option ViewpointExtractionSupport.NightLootBonus
+{
+    type = integer,
+    min = 0,
+    max = 500,
+    default = 50,
+    page = ViewpointExtractionSupport_NightPage,
+    translation = ViewpointExtractionSupport.NightLootBonus,
+}
+
+option ViewpointExtractionSupport.NightSprinterPercentage
+{
+    type = integer,
+    min = 0,
+    max = 100,
+    default = 10,
+    page = ViewpointExtractionSupport_NightPage,
+    translation = ViewpointExtractionSupport.NightSprinterPercentage,
+}

@@ -4,8 +4,14 @@ import java.lang.reflect.Method;
 import me.zed_0xff.zombie_buddy.Exposer;
 
 public final class Bridge {
+    private static final String NIGHT_LUCK_MOODLE = "viewpointextractionsupport:night_luck";
     private static Method triggerEvent;
+    private static Method moodleTypeAccessor;
+    private static Method moodleTranslationNameAccessor;
     private static volatile boolean suppressNative;
+    private static volatile float nightLootMultiplier = 1.0f;
+    private static volatile boolean nightLuckMoodleActive;
+    private static volatile boolean nightMoodleRefreshNeeded;
     private static boolean warned;
 
     static {
@@ -55,6 +61,41 @@ public final class Bridge {
         GroundAreas.clear();
     }
 
+    public static void setNightFeatureState(boolean enabled, int lootBonusPercent, boolean isNight) {
+        int bonus = Math.max(0, Math.min(500, lootBonusPercent));
+        nightLootMultiplier = enabled && isNight ? 1.0f + bonus / 100.0f : 1.0f;
+
+        boolean moodleActive = enabled && isNight && bonus > 0;
+        if (nightLuckMoodleActive != moodleActive) {
+            nightLuckMoodleActive = moodleActive;
+            nightMoodleRefreshNeeded = true;
+        }
+    }
+
+    public static float scaleNightLootChance(float chance, Object container) {
+        if (container == null) {
+            return chance;
+        }
+        return chance * nightLootMultiplier;
+    }
+
+    public static int nightLuckMoodleLevel(Object moodle, int level) {
+        return nightLuckMoodleActive && isNightLuckMoodle(moodle) ? 1 : level;
+    }
+
+    public static int nightLuckMoodleGoodBadNeutral(Object moodleType, int value) {
+        return nightLuckMoodleActive && isNightLuckMoodleType(moodleType) ? 1 : value;
+    }
+
+    public static boolean nightMoodleRefresh(boolean refreshNeeded) {
+        if (refreshNeeded || !nightMoodleRefreshNeeded) {
+            nightMoodleRefreshNeeded = false;
+            return refreshNeeded;
+        }
+        nightMoodleRefreshNeeded = false;
+        return true;
+    }
+
     public static void beginRopes() {
         ExtractionRope.begin();
     }
@@ -70,6 +111,34 @@ public final class Bridge {
 
     public static void clearRopes() {
         ExtractionRope.clear();
+    }
+
+    private static boolean isNightLuckMoodle(Object moodle) {
+        if (moodle == null) {
+            return false;
+        }
+        try {
+            if (moodleTypeAccessor == null) {
+                moodleTypeAccessor = moodle.getClass().getMethod("getMoodleType");
+            }
+            return isNightLuckMoodleType(moodleTypeAccessor.invoke(moodle));
+        } catch (ReflectiveOperationException error) {
+            return false;
+        }
+    }
+
+    private static boolean isNightLuckMoodleType(Object moodleType) {
+        if (moodleType == null) {
+            return false;
+        }
+        try {
+            if (moodleTranslationNameAccessor == null) {
+                moodleTranslationNameAccessor = moodleType.getClass().getMethod("getTranslationName");
+            }
+            return NIGHT_LUCK_MOODLE.equals(moodleTranslationNameAccessor.invoke(moodleType));
+        } catch (ReflectiveOperationException error) {
+            return false;
+        }
     }
 
     public static void collectFlights() {

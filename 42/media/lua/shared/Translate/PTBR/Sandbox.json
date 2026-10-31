@@ -1,0 +1,9 @@
+{
+    "Sandbox_ViewpointExtractionSupport_NightPage": "Viewpoint Extraction Support: Eventos noturnos",
+    "Sandbox_ViewpointExtractionSupport.NightMode": "Ativar eventos noturnos",
+    "Sandbox_ViewpointExtractionSupport.NightMode_tooltip": "Durante a noite, aumenta as chances de itens aparecerem nos containers e transforma uma porcentagem configurável de zumbis em sprinters. Desativado por padrão.",
+    "Sandbox_ViewpointExtractionSupport.NightLootBonus": "Bônus de chance de loot noturno (%%)",
+    "Sandbox_ViewpointExtractionSupport.NightLootBonus_tooltip": "Percentual acrescentado à chance de cada item aparecer nos containers. Um bônus de 50%% multiplica essa chance por 1,5. Use 0 para desativar o bônus de loot.",
+    "Sandbox_ViewpointExtractionSupport.NightSprinterPercentage": "Porcentagem de sprinters à noite",
+    "Sandbox_ViewpointExtractionSupport.NightSprinterPercentage_tooltip": "Cada zumbi tem esta chance percentual de virar sprinter à noite. A velocidade original volta durante o dia. Padrão: 10%%."
+}

@@ -28,6 +28,13 @@ In **Mod Options > Viewpoint Extraction Support**:
 - **Use NeatUI styling for Extraction Mode menus**: enabled by default. When `NeatUI_Framework` is installed, applies its panel and button styling to the Extraction Mode HUD and menus. If NeatUI is missing, the normal Extraction Mode interface is used automatically; disabling this option always uses the normal interface.
 - **Aircraft selection**: UH-1B is enabled by default to preserve the previous behavior. Other aircraft are off by default. Each extraction flight randomly selects one of the checked aircraft whose assets are currently available. If none of the selected models are available, the addon does not create a helicopter for that flight.
 
+In **Sandbox Options > Viewpoint Extraction Support: Night Events**:
+
+- **Enable Night Events**: disabled by default. When enabled, the loot bonus and sprinter selection apply only while the game reports that it is night.
+- **Night loot chance bonus**: adds a percentage to each item's container spawn chance; the default is 50% (1.5 times the original chance). Set it to 0 to disable the loot bonus. This changes item appearance chances rather than stack sizes.
+- **Night sprinter percentage**: each zombie has this chance to become a sprinter at night; default 10%. Zombies selected by this feature return to their original speed during the day.
+- When the loot bonus is active, a positive Night Luck moodle appears. The custom moodle is rendered by Moodles in Lua and works alongside Dynamic Moodles when those mods are installed.
+
 English and Brazilian Portuguese interface text is included. Extraction timing, boarding interactions, zombie attraction and sound playback remain owned by Extraction Mode. With Viewpoint's directional aircraft audio enabled, the original native helicopter recording follows the extraction model's position and altitude. This addon creates visual aircraft, not physical vehicles or extra extraction destinations.
 
 ## Integration
