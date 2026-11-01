@@ -2,19 +2,12 @@
 
 Displays a randomly selected, enabled aircraft during Extraction Mode pickups in Project Viewpoint. The aircraft approaches the selected extraction point during the final approach countdown, lowers a 3D rope as it settles into a hover, and flies away with the rope retracting when the pickup ends or is cancelled. A translucent yellow cylindrical marker identifies the boarding area in the 3D world.
 
-When [ProjectRPGExpanded](https://steamcommunity.com/sharedfiles/filedetails/?id=3826426915) is installed, this addon adds an Extraction tab to its PDA and routes Extraction Mode's dedicated screens into it. ProjectRPGExpanded remains optional; without a compatible PDA, Extraction Mode keeps opening its original screens.
-
-The Extraction overview provides destination selection, the native contextual raid action and countdown, generator controls, and a tracked mission summary. Persistent navigation switches between the overview, upgrades, missions, barter and garage without stacking menu windows. Mission and upgrade lists fill the PDA's available content area; the garage retains its original vehicle controls. Generator changes and quest turn-ins retain Extraction Mode's hideout and permission requirements.
-
-Use **Track mission** on an unfinished, unlocked mission to show its objectives, inventory requirements and skills on the overview. Tracking is saved per character and does not restrict progress on other quests or change the team's shared quest state. You can stop tracking or choose another mission; completing or losing access to a tracked quest clears the selection. The UI follows the PDA's internal language, with English and Brazilian Portuguese translations.
-
 This is a compatibility addon for **Visible Helicopter Events**. It uses that mod's existing renderer and the selected aircraft assets; no third-party models, textures or renderer code are redistributed.
 
 ## Requirements
 
 - Project Zomboid Build 42.21+.
 - [Extraction Mode](https://steamcommunity.com/sharedfiles/filedetails/?id=3785397275) (initial integration targets 0.9.75).
-- Optional PDA integration: [ProjectRPGExpanded](https://steamcommunity.com/sharedfiles/filedetails/?id=3826426915). Its Extraction tab is added when the installed PDA exposes the supported interface; otherwise the native Extraction Mode screens remain available.
 - [Project Viewpoint](https://steamcommunity.com/sharedfiles/filedetails/?id=3809306528).
 - ZombieBuddy 2.3.4+.
 - [Project Viewpoint - Visible Helicopter Events](https://steamcommunity.com/sharedfiles/filedetails/?id=3819322670) (initial integration targets 1.3.7).

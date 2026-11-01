@@ -15,7 +15,7 @@ ExtractionMode = {
     UIVisibility = { updateHUD = function() ExtractionMode.HUDInstance.visible = true end },
 }
 
-local integration = require "ViewpointExtractionSupport/ExtractionPDA"
+local integration = require "ExtractionModePDA/Integration"
 Events.OnGameStart.fire()
 assert(integration.install() == false, "missing PDA must leave the native Extraction Mode UI available")
 ExtractionMode.UIVisibility.updateHUD()

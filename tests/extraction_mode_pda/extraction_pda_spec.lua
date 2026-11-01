@@ -161,12 +161,12 @@ ExtractionMode.openGaragePanel = function(player, bypassControlTile)
 end
 
 local dashboardContext
-package.preload["ViewpointExtractionSupport/ExtractionPDADashboard"] = function()
+package.preload["ExtractionModePDA/Dashboard"] = function()
     return { new = function(context)
         dashboardContext = context
         return {
             navigation = function(ui)
-                ui._vesExtractionHits = {{x = 20, y = 80, w = 160, h = 32,
+                ui._empdaExtractionHits = {{x = 20, y = 80, w = 160, h = 32,
                     action = function() context.open("openTownPicker") end}}
                 return 124
             end,
@@ -176,7 +176,7 @@ package.preload["ViewpointExtractionSupport/ExtractionPDADashboard"] = function(
     end }
 end
 
-local integration = require "ViewpointExtractionSupport/ExtractionPDA"
+local integration = require "ExtractionModePDA/Integration"
 Events.OnGameStart.fire()
 assert(integration.install(), "the compatible PDA hooks should install")
 RPGSkillTreeUI.open()
@@ -198,10 +198,10 @@ assert(ExtractionMode.openAdminPanel() == "native-admin", "admin permissions mus
 opened:setVisible(false)
 pda.DockTick(RPGSkillTreeUI.instance)
 RPGSkillTreeUI.render(RPGSkillTreeUI.instance)
-assert(RPGSkillTreeUI.instance.homeHidden and #RPGSkillTreeUI.instance._vesExtractionHits > 0,
+assert(RPGSkillTreeUI.instance.homeHidden and #RPGSkillTreeUI.instance._empdaExtractionHits > 0,
     "dashboard must be available after closing a dedicated page")
 
-local button = RPGSkillTreeUI.instance._vesExtractionHits[1]
+local button = RPGSkillTreeUI.instance._empdaExtractionHits[1]
 assert(RPGSkillTreeUI.onMouseDown(RPGSkillTreeUI.instance, button.x + 2, button.y + 2),
     "dashboard actions should capture mouse presses")
 assert(RPGSkillTreeUI.onMouseUp(RPGSkillTreeUI.instance, button.x + 2, button.y + 2),

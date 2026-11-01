@@ -1,5 +1,5 @@
-local Dashboard = require "ViewpointExtractionSupport/ExtractionPDADashboard"
-local QuestTracking = require "ViewpointExtractionSupport/ExtractionQuestTracking"
+local Dashboard = require "ExtractionModePDA/Dashboard"
+local QuestTracking = require "ExtractionModePDA/QuestTracking"
 local Integration = {}
 local navigate
 local mainPages = { openUpgradePanel = "upgrades", openQuestPanel = "quests", openGaragePanel = "garage" }
@@ -7,49 +7,49 @@ local mainPages = { openUpgradePanel = "upgrades", openQuestPanel = "quests", op
 local routes = {
     {
         name = "openControllerPanel",
-        title = "VES_ExtractionController",
+        title = "EMPD_ExtractionController",
         fallback = "EXTRACTION CONTROLS",
         icon = "Pin",
         resolve = function(mode) return mode.ControllerPanelInstances and mode.ControllerPanelInstances[0] end,
     },
     {
         name = "openTownPicker",
-        title = "VES_ExtractionDestinations",
+        title = "EMPD_ExtractionDestinations",
         fallback = "RAID DESTINATIONS",
         icon = "Pin",
         resolve = function(mode) return mode.TownPickerInstance end,
     },
     {
         name = "openUpgradePanel",
-        title = "VES_HideoutUpgrades",
+        title = "EMPD_HideoutUpgrades",
         fallback = "HIDEOUT UPGRADES",
         icon = "Gear",
         resolve = function(mode) return mode.UpgradePanelInstance end,
     },
     {
         name = "openQuestPanel",
-        title = "VES_Contacts",
+        title = "EMPD_Contacts",
         fallback = "CONTACTS",
         icon = "Mail",
         resolve = function(mode) return mode.QuestPanelInstance end,
     },
     {
         name = "openHideoutSocial",
-        title = "VES_HideoutSocial",
+        title = "EMPD_HideoutSocial",
         fallback = "HIDEOUT / INVITATIONS",
         icon = "Contacts",
         social = true,
     },
     {
         name = "openDeployPanel",
-        title = "VES_Deploy",
+        title = "EMPD_Deploy",
         fallback = "DEPLOYMENT",
         icon = "Contract",
         lobby = true,
     },
     {
         name = "openGaragePanel",
-        title = "VES_Garage",
+        title = "EMPD_Garage",
         fallback = "HIDEOUT GARAGE",
         icon = "Gear",
         resolve = function(mode) return mode.GaragePanelInstance end,
@@ -57,7 +57,7 @@ local routes = {
     },
     {
         name = "openAdminPanel",
-        title = "VES_Admin",
+        title = "EMPD_Admin",
         fallback = "EXTRACTION ADMIN",
         icon = "Server",
         resolve = function(mode) return mode.AdminPanelInstance end,
@@ -65,14 +65,14 @@ local routes = {
     },
     {
         name = "openAdminOperations",
-        title = "VES_AdminOperations",
+        title = "EMPD_AdminOperations",
         fallback = "ADMIN OPERATIONS",
         icon = "Contract",
         admin = true,
     },
     {
         name = "openAdminTools",
-        title = "VES_AdminTools",
+        title = "EMPD_AdminTools",
         fallback = "ADMIN TOOLS",
         icon = "Gear",
         resolve = function(mode) return mode.AdminToolsInstance end,
@@ -80,7 +80,7 @@ local routes = {
     },
     {
         name = "openDebugPanel",
-        title = "VES_Debug",
+        title = "EMPD_Debug",
         fallback = "EXTRACTION DEBUG",
         icon = "Danger",
         resolve = function(mode) return mode.DebugPanelInstance end,
@@ -88,7 +88,7 @@ local routes = {
     },
     {
         name = "openRaidLocationEditor",
-        title = "VES_RaidLocations",
+        title = "EMPD_RaidLocations",
         fallback = "RAID LOCATIONS",
         icon = "Pin",
         resolve = function(mode) return mode.RaidLocationEditorInstance end,
@@ -96,7 +96,7 @@ local routes = {
     },
     {
         name = "openContentEditor",
-        title = "VES_ContentEditor",
+        title = "EMPD_ContentEditor",
         fallback = "CONTENT EDITOR",
         icon = "Contract",
         resolve = function(mode) return mode.ContentEditorInstance end,
@@ -104,14 +104,14 @@ local routes = {
     },
     {
         name = "openAdminBandits",
-        title = "VES_BanditControls",
+        title = "EMPD_BanditControls",
         fallback = "BANDIT CONTROLS",
         icon = "Danger",
         admin = true,
     },
     {
         name = "openAdminALife",
-        title = "VES_ALifeControls",
+        title = "EMPD_ALifeControls",
         fallback = "A-LIFE CONTROLS",
         icon = "Danger",
         admin = true,
@@ -138,7 +138,7 @@ local state = {
 local function diagnostic(key, message)
     if state.diagnostics[key] then return end
     state.diagnostics[key] = true
-    print("[Viewpoint Extraction Support] " .. message)
+    print("[Extraction Mode PDA] " .. message)
 end
 
 local syncDockedPanels
@@ -157,14 +157,15 @@ local function pdaLanguageCode()
     return entry and entry.code or nil
 end
 
-local function readLanguageFile(code, filename)
-    local cacheKey = code .. "/" .. filename
+local function readLanguageFile(code, filename, modId)
+    modId = modId or "ExtractionModePDA"
+    local cacheKey = modId .. ":" .. code .. "/" .. filename
     if state.languageFiles[cacheKey] then return state.languageFiles[cacheKey] end
     local ok, language = pcall(require, "PRPGE_PDALang")
     if not ok or type(language.Parse) ~= "function" or not getModFileReader then return nil end
     local read, values = pcall(function()
-        local reader = getModFileReader("ViewpointExtractionSupport",
-            "media/lua/shared/Translate/" .. cacheKey, false)
+        local reader = getModFileReader(modId,
+            "media/lua/shared/Translate/" .. code .. "/" .. filename, false)
         if not reader then return nil end
         local lines = {}
         local line = reader:readLine()
@@ -185,11 +186,18 @@ end
 local function pdaTranslation(key, filename)
     local code = pdaLanguageCode()
     if not code then return nil end
-    local values = readLanguageFile(code, filename)
-    if values and values[key] then return values[key] end
-    if code ~= "EN" then
-        values = readLanguageFile("EN", filename)
+    local function lookup(languageCode)
+        local values = readLanguageFile(languageCode, filename)
         if values and values[key] then return values[key] end
+        if filename == "IG_UI.json" then
+            values = readLanguageFile(languageCode, filename, "ExtractionMode")
+            if values and values[key] then return values[key] end
+        end
+    end
+    local value = lookup(code)
+    if value then return value end
+    if code ~= "EN" then
+        return lookup("EN")
     end
     return nil
 end
@@ -238,14 +246,14 @@ local function adminControlsVisible(data)
 end
 
 local function dashboardText(key, fallback, ...)
-    return formatPdaTranslation(translation("UI_ViewpointExtractionSupport_ExtractionPDA_" .. key, fallback), ...)
+    return formatPdaTranslation(translation("UI_ExtractionModePDA_" .. key, fallback), ...)
 end
 
 local function townName(data)
     local key = data.selectedTownKey or data.destinationTownKey
     local fallback = data.selectedTownName or data.destinationTownName
     if not key then
-        return fallback or translation("UI_ViewpointExtractionSupport_ExtractionPDA_NoDestination", "No destination selected")
+        return fallback or translation("UI_ExtractionModePDA_NoDestination", "No destination selected")
     end
     local config = ExtractionMode and ExtractionMode.Config
     if config and config.townDisplayName then
@@ -290,7 +298,7 @@ local function styleWindow(root, palette)
     while #pending > 0 do
         local element = table.remove(pending)
         if type(element) == "table" then
-            if not element._vesExtractionStyled then
+            if not element._empdaExtractionStyled then
                 local isRoot = element == root
                 local kind = tostring(element.Type or element.type or "")
                 local isButton = kind:find("Button", 1, true) ~= nil or element.onClick ~= nil
@@ -300,7 +308,7 @@ local function styleWindow(root, palette)
                     recolor(element, "backgroundColorMouseOver", palette.buttonHover)
                     recolor(element, "textColor", palette.text)
                 end
-                element._vesExtractionStyled = true
+                element._empdaExtractionStyled = true
             end
             for _, child in pairs(element.children or {}) do pending[#pending + 1] = child end
         end
@@ -330,14 +338,14 @@ local function capture(route, result, args)
                 QuestTracking.installPanel(panel, dashboardText)
                 panel.activeTab = state.section == "barter" and "barter" or "quests"
                 if state.requestedQuest then
-                    panel.expandedQuestId, panel._vesFocusQuest = state.requestedQuest, state.requestedQuest
+                    panel.expandedQuestId, panel._empdaFocusQuest = state.requestedQuest, state.requestedQuest
                     state.requestedQuest = nil
                 end
                 panel:applyTabState()
                 panel.lastLayoutKey = nil
             end
-            if route.name ~= "openGaragePanel" and not panel._vesPageLayout then
-                panel._vesPageLayout = true
+            if route.name ~= "openGaragePanel" and not panel._empdaPageLayout then
+                panel._empdaPageLayout = true
                 local original = panel.prerender
                 panel.prerender = function(owner, ...)
                     local previous = state.viewportPanel
@@ -346,8 +354,8 @@ local function capture(route, result, args)
                     local rect = docked and state.pda.DockRect(state.ui.instance)
                     local key = tostring(docked) .. ":" .. tostring(rect and rect.w) .. ":" .. tostring(rect and rect.h)
                         .. ":" .. tostring(pdaLanguageCode())
-                    if owner._vesPageSize ~= key then
-                        owner._vesPageSize, owner.lastLayoutKey, owner.textLayoutKey = key, nil, nil
+                    if owner._empdaPageSize ~= key then
+                        owner._empdaPageSize, owner.lastLayoutKey, owner.textLayoutKey = key, nil, nil
                     end
                     local result = pack(pcall(original, owner, ...))
                     state.viewportPanel = previous
@@ -366,17 +374,17 @@ local function capture(route, result, args)
                                 if list.vscroll then list.vscroll:setHeight(list.height) end
                             end
                         end
-                        if docked and owner._vesFocusQuest then
+                        if docked and owner._empdaFocusQuest then
                             local y = 0
                             for _, definition in ipairs(owner:acquiredDefinitions()) do
-                                if definition.id == owner._vesFocusQuest then
+                                if definition.id == owner._empdaFocusQuest then
                                     local maximum = math.max(0, owner.questList:getScrollHeight() - owner.questList.height)
                                     owner.questList:setYScroll(-math.min(y, maximum))
                                     break
                                 end
                                 y = y + owner:rowHeight(definition)
                             end
-                            owner._vesFocusQuest = nil
+                            owner._empdaFocusQuest = nil
                         end
                     end
                     return unpack(result, 2, result.n)
@@ -496,7 +504,7 @@ navigate = function(page, questId)
     if (page == "quests" or page == "barter") and top and top == ExtractionMode.QuestPanelInstance then
         state.section = page
         top.activeTab = page == "barter" and "barter" or "quests"
-        if questId then top.expandedQuestId, top._vesFocusQuest = questId, questId end
+        if questId then top.expandedQuestId, top._empdaFocusQuest = questId, questId end
         top:applyTabState()
         top:layoutRows(false)
         if page == "barter" then top:layoutBarterRows(true) end
@@ -505,12 +513,12 @@ navigate = function(page, questId)
     for _ = 1, #routes do
         top = ui._pdaTop
         local info = top and pda._docked[top]
-        if not (info and info.entry._viewpointExtractionSupport) then break end
+        if not (info and info.entry._extractionModePDA) then break end
         top.returnToController = false
         pda.Back(ui)
     end
     pda.Tab, state.section = "extraction", page
-    ui._vesExtractionScroll = 0
+    ui._empdaExtractionScroll = 0
     if page == "home" then return end
     state.requestedQuest = questId
     local route = page == "upgrades" and "openUpgradePanel"
@@ -540,7 +548,7 @@ local function dockEntry(route)
         fallback = route.fallback,
         icon = route.icon,
         fill = route.name == "openUpgradePanel" or route.name == "openQuestPanel",
-        _viewpointExtractionSupport = route.name,
+        _extractionModePDA = route.name,
     }
 end
 
@@ -552,7 +560,7 @@ local function installRoutes()
             local entry = dockEntry(route)
             local found = false
             for _, existing in ipairs(state.pda.DOCK) do
-                if existing._viewpointExtractionSupport == route.name then found = true; break end
+                if existing._extractionModePDA == route.name then found = true; break end
             end
             if not found then state.pda.DOCK[#state.pda.DOCK + 1] = entry end
             state.wrapped[route.name] = true
@@ -570,7 +578,7 @@ local tabIcons = {
 
 local function tabLabel(rect, pda, localization, ui)
     if rect.id == "extraction" then
-        return translation("UI_ViewpointExtractionSupport_ExtractionPDA_Tab", "EXTRACTION")
+        return translation("UI_ExtractionModePDA_Tab", "EXTRACTION")
     end
     if rect.id == "screen" then
         local title = pda.ScreenTitle and pda.ScreenTitle(ui)
@@ -695,7 +703,7 @@ local function addExtractionTab(ui, pda)
         local active = rect.id == "screen" and pageActive
             or not pageActive and pda.Tab == rect.id
         local icon = rect.id == "screen" and select(2, pda.ScreenTitle(ui)) or nil
-        if rect.id == "extraction" then ui._vesExtractionTabRect = placed end
+        if rect.id == "extraction" then ui._empdaExtractionTabRect = placed end
         drawTab(ui, placed, labels[index], icon, active, pda, iconsOnly)
         activeTabRects[#activeTabRects + 1] = placed
         x = x + width + gap
@@ -718,12 +726,12 @@ local function installPageHooks(ui, pda)
             end
             if pda.Tab == "extraction" then
                 local info = owner._pdaTop and pda._docked[owner._pdaTop]
-                if not pda.DockActive(owner) or (info and mainPages[info.entry._viewpointExtractionSupport]) then
+                if not pda.DockActive(owner) or (info and mainPages[info.entry._extractionModePDA]) then
                     local page = pda.DockActive(owner) and state.section or "home"
                     local top = state.dashboard.navigation(owner, pda, page)
                     if page == "home" then state.dashboard.render(owner, pda, top) end
                 else
-                    owner._vesExtractionHits = {}
+                    owner._empdaExtractionHits = {}
                 end
             end
             if syncDockedPanels then syncDockedPanels(owner) end
@@ -734,23 +742,23 @@ local function installPageHooks(ui, pda)
     if ui.onMouseDown ~= state.downWrapper then
         local oldDown = ui.onMouseDown
         state.downWrapper = function(owner, x, y, ...)
-            owner._vesExtractionPressed = nil
-            owner._vesExtractionTabPressed = nil
-            local tab = owner._vesExtractionTabRect
+            owner._empdaExtractionPressed = nil
+            owner._empdaExtractionTabPressed = nil
+            local tab = owner._empdaExtractionTabRect
             if tab and isInside(x, y, tab) then
-                owner._vesExtractionTabPressed = true
+                owner._empdaExtractionTabPressed = true
                 if pda.DockActive(owner) then pda.Back(owner) end
                 if pda.Tab ~= "extraction" then
                     pda.Tab = "extraction"
                     if pda.Sound then pda.Sound("Key") end
-                    pda.Transition(owner, translation("UI_ViewpointExtractionSupport_ExtractionPDA_Tab", "EXTRACTION"))
+                    pda.Transition(owner, translation("UI_ExtractionModePDA_Tab", "EXTRACTION"))
                 end
                 return true
             end
             if pda.Tab == "extraction" then
-                for _, rect in ipairs(owner._vesExtractionHits or {}) do
+                for _, rect in ipairs(owner._empdaExtractionHits or {}) do
                     if isInside(x, y, rect) then
-                        owner._vesExtractionPressed = rect
+                        owner._empdaExtractionPressed = rect
                         if pda.Sound then pda.Sound("Key") end
                         return true
                     end
@@ -763,11 +771,11 @@ local function installPageHooks(ui, pda)
     if ui.onMouseUp ~= state.upWrapper then
         local oldUp = ui.onMouseUp
         state.upWrapper = function(owner, x, y, ...)
-            local tabPressed = owner._vesExtractionTabPressed
-            owner._vesExtractionTabPressed = nil
+            local tabPressed = owner._empdaExtractionTabPressed
+            owner._empdaExtractionTabPressed = nil
             if tabPressed then return true end
-            local pressed = owner._vesExtractionPressed
-            owner._vesExtractionPressed = nil
+            local pressed = owner._empdaExtractionPressed
+            owner._empdaExtractionPressed = nil
             if pressed then
                 if pda.Tab == "extraction" and isInside(x, y, pressed) and pressed.action then pressed.action() end
                 return true
@@ -780,11 +788,11 @@ local function installPageHooks(ui, pda)
         local oldWheel = ui.onMouseWheel
         state.wheelWrapper = function(owner, delta, ...)
             if pda.Tab == "extraction" and not pda.DockActive(owner) then
-                local rect = owner._vesExtractionViewport
+                local rect = owner._empdaExtractionViewport
                 local x, y = getMouseX() - owner:getAbsoluteX(), getMouseY() - owner:getAbsoluteY()
                 if isInside(x, y, rect) then
-                    local maximum = math.max(0, (owner._vesExtractionContentH or 0) - rect.h)
-                    owner._vesExtractionScroll = math.max(0, math.min(maximum, (owner._vesExtractionScroll or 0) - delta * 42))
+                    local maximum = math.max(0, (owner._empdaExtractionContentH or 0) - rect.h)
+                    owner._empdaExtractionScroll = math.max(0, math.min(maximum, (owner._empdaExtractionScroll or 0) - delta * 42))
                     return true
                 end
             end
@@ -810,7 +818,7 @@ local function installDockSkin(pda)
     local originalRect, originalScreen = pda.DockRect, pda.DrawScreen
     local function mainPage(ui)
         local info = ui and ui._pdaTop and pda._docked[ui._pdaTop]
-        return info and mainPages[info.entry._viewpointExtractionSupport] ~= nil
+        return info and mainPages[info.entry._extractionModePDA] ~= nil
     end
     pda.DockRect = function(ui)
         local rect = originalRect(ui)
@@ -864,7 +872,7 @@ syncDockedPanels = function(liveInstance)
         local now = getTimestampMs and getTimestampMs() or 0
         if now >= (state.nextDockProbe or 0) then
             state.nextDockProbe = now + 5000
-            print("[Viewpoint Extraction Support] Dock probe found no visible registered Extraction Mode panels; active PDA pages="
+            print("[Extraction Mode PDA] Dock probe found no visible registered Extraction Mode panels; active PDA pages="
                 .. tostring(#(active or {})))
         end
     end
@@ -928,7 +936,7 @@ local function installExtractionModeLocalization()
     if getText and getText ~= state.getTextHook then
         local originalGetText = getText
         state.getTextHook = function(key, ...)
-            if type(key) == "string" and key:sub(1, 13) == "UI_PRPGE_VES_" then
+            if type(key) == "string" and key:sub(1, 14) == "UI_PRPGE_EMPD_" then
                 local value = pdaTranslation(key, "UI.json")
                 if value then return formatPdaTranslation(value, ...) end
             end
@@ -1126,12 +1134,12 @@ local function installPlayerCardCompatibility()
 
     local function syncPlayerCardVisibility(card, overlapsInventory)
         if overlapsInventory then
-            card._vesErgonomicHidden = true
+            card._empdaErgonomicHidden = true
             if card:isVisible() then card:setVisible(false) end
             if card.portrait and card.portrait:isVisible() then card.portrait:setVisible(false) end
             if card.levelBadge and card.levelBadge:isVisible() then card.levelBadge:setVisible(false) end
-        elseif card._vesErgonomicHidden then
-            card._vesErgonomicHidden = nil
+        elseif card._empdaErgonomicHidden then
+            card._empdaErgonomicHidden = nil
             if card._shown then card:setVisible(true) end
         end
     end
@@ -1210,7 +1218,7 @@ function Integration.install()
     local routeCount = installRoutes()
     state.installed = true
     state.failure = nil
-    print("[Viewpoint Extraction Support] ProjectRPGExpanded PDA integration active; routed "
+    print("[Extraction Mode PDA] ProjectRPGExpanded PDA integration active; routed "
         .. tostring(routeCount) .. " Extraction Mode screens; native HUD disabled")
     return true
 end
@@ -1221,7 +1229,7 @@ local function tick()
         if state.attempts % 30 == 0 then
             local installed = Integration.install()
             if not installed and state.attempts >= 120 then
-                print("[Viewpoint Extraction Support] ProjectRPGExpanded PDA integration unavailable: "
+                print("[Extraction Mode PDA] ProjectRPGExpanded PDA integration unavailable: "
                     .. tostring(state.failure or "unknown compatibility error"))
                 if Events and Events.OnTick and Events.OnTick.Remove then Events.OnTick.Remove(tick) end
                 return

@@ -1,8 +1,8 @@
 name=Viewpoint Extraction Support
 id=ViewpointExtractionSupport
 author=Maeiro
-description=Visible configurable extraction helicopters, positional audio, a simulated 3D rope, boarding markers, night luck events, alerts, and optional Extraction Mode UI in ProjectRPGExpanded's PDA.
-modversion=0.1.20
+description=Visible configurable extraction helicopters, positional audio, a simulated 3D rope, boarding markers, night luck events, and alerts.
+modversion=0.1.21
 versionMin=42.21.0
 require=ExtractionMode,Viewpoint,ZombieBuddy,VisibleHelicopterEvent
 loadModAfter=ExtractionMode,VisibleHelicopterEvent

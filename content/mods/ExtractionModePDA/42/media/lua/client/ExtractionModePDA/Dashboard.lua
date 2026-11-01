@@ -1,4 +1,4 @@
-local Tracking = require "ViewpointExtractionSupport/ExtractionQuestTracking"
+local Tracking = require "ExtractionModePDA/QuestTracking"
 local Dashboard = {}
 local sample = {}
 
@@ -21,7 +21,7 @@ function Dashboard.new(context)
     end
     local function hit(ui, rect, action)
         rect.action = action
-        ui._vesExtractionHits[#ui._vesExtractionHits + 1] = rect
+        ui._empdaExtractionHits[#ui._empdaExtractionHits + 1] = rect
     end
     local function button(ui, pda, x, y, w, label, action, enabled, selected, style)
         style = style or {}
@@ -111,7 +111,7 @@ function Dashboard.new(context)
     function view.navigation(ui, pda, selected)
         local Layout, data = ExtractionMode.TextLayout, getState(0)
         local bodyTop = view.bodyTop()
-        ui._vesExtractionHits = {}
+        ui._empdaExtractionHits = {}
         line(ui, pda, text("DashboardTitle", "Extraction control"), 30, 80, ui.width >= 760 and ui.width - 300 or ui.width - 60, true)
         local subtitle = context.town(data) .. " | " .. (data.sharedHideout == true
             and text("SharedHideout", "Shared hideout") or text("PersonalHideout", "Personal hideout"))
@@ -133,7 +133,7 @@ function Dashboard.new(context)
                 page ~= "barter" or not reference, selected == page)
             x = x + width + 6
         end
-        for _, rect in ipairs(ui._vesExtractionHits) do rect.navigation = true end
+        for _, rect in ipairs(ui._empdaExtractionHits) do rect.navigation = true end
         return bodyTop
     end
     local function panel(ui, pda, x, y, width, height)
@@ -208,7 +208,7 @@ function Dashboard.new(context)
         local data, Layout, config = getState(0), ExtractionMode.TextLayout, ExtractionMode.Config
         local left, width, bottom = 18, ui.width - 36, ui.height - 18
         local viewportH = math.max(1, bottom - top)
-        local scroll = math.min(ui._vesExtractionScroll or 0, math.max(0, (ui._vesExtractionContentH or 0) - viewportH))
+        local scroll = math.min(ui._empdaExtractionScroll or 0, math.max(0, (ui._empdaExtractionContentH or 0) - viewportH))
         local y, gap, pad = top - scroll, 18, 18
         local narrow = width < 760
         ui:setStencilRect(left, top, width, viewportH)
@@ -402,14 +402,14 @@ function Dashboard.new(context)
         drawActions(ui, pda, extraActions, left, y)
         y = y + extraActions.height
         ui:clearStencilRect()
-        ui._vesExtractionContentH, ui._vesExtractionScroll = y + scroll - top + 12, scroll
-        ui._vesExtractionViewport = {x = left, y = top, w = width, h = viewportH}
+        ui._empdaExtractionContentH, ui._empdaExtractionScroll = y + scroll - top + 12, scroll
+        ui._empdaExtractionViewport = {x = left, y = top, w = width, h = viewportH}
         local valid = {}
-        for _, rect in ipairs(ui._vesExtractionHits) do
+        for _, rect in ipairs(ui._empdaExtractionHits) do
             if rect.navigation or (rect.y >= top and rect.y + rect.h <= bottom) then valid[#valid + 1] = rect end
         end
-        ui._vesExtractionHits = valid
-        if ui._vesExtractionContentH > viewportH then
+        ui._empdaExtractionHits = valid
+        if ui._empdaExtractionContentH > viewportH then
             ui:drawTextRight(text("ScrollHint", "Scroll to see more"), left + width - 8, bottom - Layout.height(UIFont.Small),
                 pda.P.muted[1], pda.P.muted[2], pda.P.muted[3], 1, UIFont.Small)
         end

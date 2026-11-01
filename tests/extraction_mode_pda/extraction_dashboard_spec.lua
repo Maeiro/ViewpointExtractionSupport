@@ -61,7 +61,7 @@ ExtractionMode = {
         requirementCounts = function() return {inventory.parts} end,
     },
 }
-local Tracking = require "ViewpointExtractionSupport/ExtractionQuestTracking"
+local Tracking = require "ExtractionModePDA/QuestTracking"
 assert(not Tracking.set(survivor, data, "locked"), "locked quests cannot be tracked")
 assert(not Tracking.set(survivor, data, "missing"), "unknown quest IDs cannot be tracked")
 assert(Tracking.set(survivor, data, "radio"))
@@ -71,8 +71,8 @@ assert(Tracking.get(other, data) == nil, "tracking is personal even when quest p
 assert(Tracking.get(survivor, {}) == nil)
 assert(Tracking.get(survivor, {quests = {}}) == nil)
 assert(Tracking.get(survivor, data).id == "radio", "waiting for a snapshot must not erase the preference")
-package.loaded["ViewpointExtractionSupport/ExtractionQuestTracking"] = nil
-Tracking = require "ViewpointExtractionSupport/ExtractionQuestTracking"
+package.loaded["ExtractionModePDA/QuestTracking"] = nil
+Tracking = require "ExtractionModePDA/QuestTracking"
 assert(Tracking.get(survivor, data).id == "radio", "selection survives recreating the client module")
 
 local pda = {P = {text = {1,1,1}, edge = {1,1,1}, accent = {1,1,1}, muted = {1,1,1},
@@ -91,7 +91,7 @@ function ui:drawText(value, x, y)
 end
 function ui:drawTextCentre(value, x, y) self.labels[#self.labels + 1] = {label = value, x = x, y = y} end
 local selectedPage
-local view = require("ViewpointExtractionSupport/ExtractionPDADashboard").new({
+local view = require("ExtractionModePDA/Dashboard").new({
     text = function(_, fallback, ...)
         local args = {...}
         return (fallback:gsub("%%(%d)", function(n) return tostring(args[tonumber(n)]) end))
@@ -106,7 +106,7 @@ end
 local function action(label)
     for _, control in ipairs(ui.labels) do
         if control.label == label then
-            for _, rect in ipairs(ui._vesExtractionHits) do
+            for _, rect in ipairs(ui._empdaExtractionHits) do
                 if control.x >= rect.x and control.x <= rect.x + rect.w
                     and control.y >= rect.y and control.y <= rect.y + rect.h then return rect.action end
             end
@@ -157,11 +157,11 @@ assert(action("CHOOSE MISSION"), "the empty state lets the player choose another
 assert(Tracking.set(survivor, data, "locked"))
 assert(Tracking.set(survivor, data, nil) and Tracking.get(survivor, data) == nil)
 
-ui.width, ui.height, ui._vesExtractionScroll = 400, 360, 350
+ui.width, ui.height, ui._empdaExtractionScroll = 400, 360, 350
 render()
-for _, rect in ipairs(ui._vesExtractionHits) do
+for _, rect in ipairs(ui._empdaExtractionHits) do
     assert(rect.w > 0 and rect.h > 0)
-    assert(rect.navigation or (rect.y >= ui._vesExtractionViewport.y and rect.y + rect.h <= ui.height - 18),
+    assert(rect.navigation or (rect.y >= ui._empdaExtractionViewport.y and rect.y + rect.h <= ui.height - 18),
         "scrolled content must not create invisible or partially clipped click targets")
 end
 print("extraction_dashboard_spec: tracking lifecycle, live permissions and scrolling passed")
@@ -178,7 +178,7 @@ function ISButton:setTitle(v) self.title = v end
 function ISButton:setWidth(v) self.width = v end
 function ISButton:setHeight(v) self.height = v end
 function ISButton:setY(v) self.y = v end
-data.quests, ui._vesExtractionScroll = {}, 0
+data.quests, ui._empdaExtractionScroll = {}, 0
 local panel = {_pdaDock = true, playerNum = 0, buttonHeight = 30, cache = {}, questList = {width = 800}}
 function panel.questList:addChild(button) button.parent = self end
 function panel:acquiredDefinitions() return definitions end
@@ -189,8 +189,8 @@ end
 function panel:layoutRows() self.cache = {} end
 Tracking.installPanel(panel, function(_, fallback) return fallback end)
 panel:layoutRows()
-local track = assert(panel._vesTrackButtons.radio)
-assert(track.visible and not panel._vesTrackButtons.locked, "only acquired unfinished quests get a tracking button")
+local track = assert(panel._empdaTrackButtons.radio)
+assert(track.visible and not panel._empdaTrackButtons.locked, "only acquired unfinished quests get a tracking button")
 local row = panel:questRow(definitions[1])
 assert(row.height == 138 and panel:questRow(definitions[1]).height == 138,
     "repeated rendering must not keep growing the mission row")
@@ -205,7 +205,7 @@ assert(not track.visible and panel:questRow(definitions[1]).height == 100,
     "a panel released from the PDA must retain its native row layout")
 print("extraction_dashboard_spec: native mission-row tracking controls passed")
 
-ui.width, ui.height, ui._vesExtractionScroll = 1100, 1400, 0
+ui.width, ui.height, ui._empdaExtractionScroll = 1100, 1400, 0
 ExtractionMode.HUDInstance = {minimized = true, action = {title = "READY", isVisible = function() return true end}}
 local hud = ExtractionMode.HUDInstance
 function hud:updateContent(current) self.action.enable = current.canReady ~= false end

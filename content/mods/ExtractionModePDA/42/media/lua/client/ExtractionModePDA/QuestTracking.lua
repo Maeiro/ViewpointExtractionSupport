@@ -1,5 +1,13 @@
 local Tracking = {}
-local KEY = "ViewpointExtractionSupportTrackedQuest"
+local KEY = "ExtractionModePDATrackedQuest"
+local LEGACY_KEY = "ViewpointExtractionSupportTrackedQuest"
+
+local function modData(player)
+    local saved = player:getModData()
+    if saved[KEY] == nil and saved[LEGACY_KEY] ~= nil then saved[KEY] = saved[LEGACY_KEY] end
+    saved[LEGACY_KEY] = nil
+    return saved
+end
 
 local function quests()
     return ExtractionMode and ExtractionMode.Quests
@@ -17,7 +25,7 @@ end
 
 function Tracking.get(player, data)
     if not player then return nil end
-    local saved = player:getModData()
+    local saved = modData(player)
     local id = saved[KEY]
     if not id or data.state == nil or type(data.quests) ~= "table" then return nil end
     for _, definition in ipairs(Tracking.available(data)) do
@@ -29,10 +37,10 @@ end
 
 function Tracking.set(player, data, id)
     if not player then return false end
-    if id == nil then player:getModData()[KEY] = nil; return true end
+    if id == nil then modData(player)[KEY] = nil; return true end
     for _, definition in ipairs(Tracking.available(data)) do
         if definition.id == id then
-            player:getModData()[KEY] = id
+            modData(player)[KEY] = id
             return true
         end
     end
@@ -40,25 +48,25 @@ function Tracking.set(player, data, id)
 end
 
 function Tracking.installPanel(panel, text)
-    if panel._vesQuestTracking or type(panel.questRow) ~= "function"
+    if panel._empdaQuestTracking or type(panel.questRow) ~= "function"
         or type(panel.layoutRows) ~= "function" then return end
-    panel._vesQuestTracking = true
+    panel._empdaQuestTracking = true
     local originalRow, originalLayout = panel.questRow, panel.layoutRows
     panel.questRow = function(self, definition)
         local row = originalRow(self, definition)
         local api = quests()
         local data = ExtractionMode.Client.stateFor(self.playerNum or 0)
         if self._pdaDock and api.isAcquired(data.quests, definition)
-            and not api.isCompleted(data.quests, definition.id) and not row._vesTrackingY then
-            row._vesTrackingY = row.height - 8
+            and not api.isCompleted(data.quests, definition.id) and not row._empdaTrackingY then
+            row._empdaTrackingY = row.height - 8
             row.height = row.height + (self.buttonHeight or 30) + 8
         end
         return row
     end
     panel.layoutRows = function(self, ...)
         originalLayout(self, ...)
-        self._vesTrackButtons = self._vesTrackButtons or {}
-        for _, button in pairs(self._vesTrackButtons) do button:setVisible(false) end
+        self._empdaTrackButtons = self._empdaTrackButtons or {}
+        for _, button in pairs(self._empdaTrackButtons) do button:setVisible(false) end
         if not self._pdaDock then return end
         local data = ExtractionMode.Client.stateFor(self.playerNum or 0)
         local player = getSpecificPlayer(self.playerNum or 0)
@@ -66,8 +74,8 @@ function Tracking.installPanel(panel, text)
         local y = 0
         for _, definition in ipairs(self:acquiredDefinitions()) do
             local row = self:questRow(definition)
-            if row._vesTrackingY then
-                local button = self._vesTrackButtons[definition.id]
+            if row._empdaTrackingY then
+                local button = self._empdaTrackButtons[definition.id]
                 if not button or button.parent ~= self.questList then
                     button = ISButton:new(12, 0, 220, self.buttonHeight or 30, "", self, function(owner, clicked)
                         local currentData = ExtractionMode.Client.stateFor(owner.playerNum or 0)
@@ -82,14 +90,14 @@ function Tracking.installPanel(panel, text)
                     button:instantiate()
                     button.questId = definition.id
                     self.questList:addChild(button)
-                    self._vesTrackButtons[definition.id] = button
+                    self._empdaTrackButtons[definition.id] = button
                 end
                 button:setTitle(tracked and tracked.id == definition.id
                     and text("Untrack", "STOP TRACKING") or text("Track", "TRACK MISSION"))
                 button:setWidth(math.min(self.questList.width - 38,
                     getTextManager():MeasureStringX(UIFont.Small, button.title) + 28))
                 button:setHeight(self.buttonHeight or 30)
-                button:setY(y + row._vesTrackingY)
+                button:setY(y + row._empdaTrackingY)
                 button:setVisible(true)
             end
             y = y + row.height

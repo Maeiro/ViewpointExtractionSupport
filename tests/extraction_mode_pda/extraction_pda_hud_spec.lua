@@ -29,7 +29,7 @@ ExtractionMode = {
     },
 }
 
-local integration = require "ViewpointExtractionSupport/ExtractionPDA"
+local integration = require "ExtractionModePDA/Integration"
 assert(integration.install())
 assert(ExtractionMode.HUDInstance.visible == false, "installing PDA mode must immediately hide the native HUD")
 local updateHUD = ExtractionMode.UIVisibility.updateHUD
