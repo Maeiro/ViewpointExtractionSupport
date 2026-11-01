@@ -80,7 +80,7 @@ local routes = {
         fallback = "EXTRACTION DEBUG",
         icon = "Danger",
         resolve = function(mode) return mode.DebugPanelInstance end,
-        admin = true,
+        debug = true,
     },
     {
         name = "openRaidLocationEditor",
@@ -222,6 +222,13 @@ local function stateFor(number)
     return mode and mode.ClientState or {}
 end
 
+local function adminControlsVisible(data)
+    local options = ExtractionMode and ExtractionMode.ClientOptions
+    if data.adminEnabled ~= true or not (options and options.showAdminControls) then return false end
+    local ok, visible = pcall(options.showAdminControls)
+    return ok and visible == true
+end
+
 local function addHit(ui, rect, route, args)
     ui._vesExtractionHits = ui._vesExtractionHits or {}
     ui._vesExtractionHits[#ui._vesExtractionHits + 1] = {
@@ -243,8 +250,10 @@ local function actionRows(data)
     if data.pvpveLobby == true then
         rows[#rows + 1] = { key = "Deploy", route = "openDeployPanel", args = { 0 } }
     end
-    if data.adminEnabled == true then
+    if adminControlsVisible(data) then
         rows[#rows + 1] = { key = "Admin", route = "openAdminPanel", args = {} }
+    end
+    if data.debugEnabled == true then
         rows[#rows + 1] = { key = "Debug", route = "openDebugPanel", args = {} }
     end
     return rows
@@ -444,7 +453,8 @@ local function allowedToRoute(route, args)
         if not ok or allowed ~= true then return false end
     end
     local data = stateFor(number)
-    if route.admin and data.adminEnabled ~= true then return false end
+    if route.admin and not adminControlsVisible(data) then return false end
+    if route.debug and data.debugEnabled ~= true then return false end
     if route.social and not data.hideoutSocial then return false end
     if route.lobby and data.pvpveLobby ~= true then return false end
     return true
