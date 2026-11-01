@@ -133,6 +133,7 @@ local state = {
     playerCardClampWrapper = nil,
     playerCardFrontWrapper = nil,
     playerCardPollWrapper = nil,
+    playerPortraitPlaceWrapper = nil,
 }
 
 local function diagnostic(key, message)
@@ -988,6 +989,37 @@ end
 local function installPlayerCardCompatibility()
     local ok, playerCard = pcall(require, "PRPGE_PlayerCard")
     if not ok or type(playerCard) ~= "table" then return false end
+
+    local portraitOk, portrait = pcall(require, "PRPGE_Portrait")
+    if portraitOk and type(portrait) == "table"
+        and type(portrait.Place) == "function"
+        and portrait.Place ~= state.playerPortraitPlaceWrapper then
+        local originalPlace = portrait.Place
+        state.playerPortraitPlaceWrapper = function(model, owner, ...)
+            if not playerCard.card or owner ~= playerCard.card then
+                return originalPlace(model, owner, ...)
+            end
+
+            local map = ISWorldMap_instance
+            local mapOpen = false
+            if map and type(map.isVisible) == "function" then
+                local visibleOk, visible = pcall(map.isVisible, map)
+                mapOpen = visibleOk and visible == true
+            end
+
+            if mapOpen then
+                if model and type(model.setVisible) == "function" then
+                    pcall(model.setVisible, model, false)
+                end
+                diagnostic("player-card-map-portrait-hidden", "Temporarily hiding the ProjectRPGExpanded portrait while the world map is open")
+                return false
+            end
+
+            return originalPlace(model, owner, ...)
+        end
+        portrait.Place = state.playerPortraitPlaceWrapper
+        diagnostic("player-card-map-portrait-installed", "Installed world-map compatibility for the ProjectRPGExpanded portrait")
+    end
 
     local inventoryWindows = {
         "ErgUIPanel", "ErgUIClusterFrame", "ErgUIBarVisPopup", "ErgUITypeWindow",

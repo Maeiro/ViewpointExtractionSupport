@@ -14,7 +14,8 @@ Adds Extraction Mode screens to the ProjectRPGExpanded Survivor PDA.
 [*]Shows destination, team readiness, hideout generator controls and a mission summary on the dashboard.
 [*]Lets you track an unfinished mission and see its objectives and requirements on the dashboard.
 [*]Uses the PDA's own language setting, with English and Brazilian Portuguese text.
-[*]Hides the native Extraction Mode interface while its PDA interface is active, with compatibility handling for the player card and Ergonomic UI.[/list]
+[*]Hides the native Extraction Mode interface while its PDA interface is active.
+[*]Hides the ProjectRPGExpanded player portrait while the world map is open to prevent map icon rendering issues, and keeps the player card behind Ergonomic UI.[/list]
 [h2]Requirements[/h2]
 [list][*]Project Zomboid Build 42.21 or newer
 [*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3785397275]Extraction Mode[/url]
@@ -23,5 +24,5 @@ This addon is independent of Viewpoint Extraction Support. If the installed PDA 
 
 Workshop ID: 3831366933
 Mod ID: ExtractionModePDA"
-	"changenote" "English-only Workshop description."
+	"changenote" "Hides the player portrait while the world map is open to prevent map icon rendering issues."
 }

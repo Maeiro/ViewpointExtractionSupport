@@ -20,7 +20,7 @@ The integration is independent of Viewpoint Extraction Support. Install this mod
 - Shows a contextual board button in Operation Status while Extraction Mode makes boarding available, using its native action.
 - Lets each character select an unfinished mission to track, showing its objectives and requirements on the dashboard.
 - Uses the PDA's internal language selection for English and Brazilian Portuguese text.
-- Keeps Extraction Mode's native HUD hidden while its interface is active in the PDA, and applies compatibility handling for the ProjectRPGExpanded player card and Ergonomic UI.
+- Keeps Extraction Mode's native HUD hidden while its interface is active in the PDA, hides the ProjectRPGExpanded player portrait while the world map is open to prevent map icon rendering issues, and keeps the player card behind Ergonomic UI.
 
 ## Local installation
 
