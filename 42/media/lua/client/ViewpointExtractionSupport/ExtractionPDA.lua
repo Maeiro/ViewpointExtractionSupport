@@ -129,6 +129,7 @@ local state = {
     languageFiles = {},
     localizationHook = nil,
     getTextHook = nil,
+    startTabRowsWrapper = nil,
 }
 
 local function diagnostic(key, message)
@@ -934,6 +935,45 @@ local function installExtractionModeLocalization()
     end
 end
 
+local function installExtractionStartTab(pda)
+    if type(pda.START_TABS) == "table" then
+        pda.START_TABS[4] = "extraction"
+    end
+
+    local ok, settings = pcall(require, "PRPGE_PDASettings")
+    if not ok or type(settings) ~= "table" or type(settings.PDARows) ~= "function" then
+        diagnostic("start-tab-settings", "PDA start-tab setting is unavailable")
+        return false
+    end
+    if settings.PDARows == state.startTabRowsWrapper then return true end
+
+    local originalRows = settings.PDARows
+    state.startTabRowsWrapper = function(...)
+        local rows = originalRows(...)
+        for _, row in ipairs(rows or {}) do
+            if row.id == "starttab" and type(row.choices) == "table" then
+                local extractionChoice
+                for _, choice in ipairs(row.choices) do
+                    if choice[1] == 4 then extractionChoice = choice end
+                end
+                if extractionChoice then
+                    extractionChoice[2], extractionChoice.icon = "", "Pin"
+                else
+                    local insertAt = #row.choices + 1
+                    for index, choice in ipairs(row.choices) do
+                        if choice[1] == 0 then insertAt = index; break end
+                    end
+                    table.insert(row.choices, insertAt, {4, "", icon = "Pin"})
+                end
+            end
+        end
+        return rows
+    end
+    settings.PDARows = state.startTabRowsWrapper
+    if settings.Rows == originalRows then settings.Rows = state.startTabRowsWrapper end
+    return true
+end
+
 function Integration.install()
     if state.installed then return true end
     local ok, pda = pcall(require, "PRPGE_PDA")
@@ -946,6 +986,7 @@ function Integration.install()
     local failure = hookReady(pda, ui)
     if failure then state.failure = failure; return false end
     state.pda, state.ui = pda, ui
+    installExtractionStartTab(pda)
     state.dashboard = Dashboard.new({text = dashboardText, state = stateFor, town = townName,
         admin = adminControlsVisible, navigate = navigate,
         open = function(name) return invoke(name, pack(0)) end})
