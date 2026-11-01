@@ -9,7 +9,7 @@ local pda = {
     P = {}, DOCK = {}, _docked = {}, Panel = noop, DockTick = noop,
     CanUse = noop, KeepOpen = noop, DockActive = noop, Back = noop,
     Transition = noop, Controls = noop, ScreenTitle = noop,
-    DockRect = noop, TransitionActive = noop,
+    DockRect = noop, DrawScreen = noop, TransitionActive = noop,
 }
 package.preload["PRPGE_PDA"] = function() return pda end
 
@@ -19,6 +19,7 @@ local function newHUD()
     return { setVisible = function(self, value) self.visible = value end }
 end
 ExtractionMode = {
+    TextLayout = { viewport = noop },
     HUDInstance = newHUD(),
     UIVisibility = {
         updateHUD = function()

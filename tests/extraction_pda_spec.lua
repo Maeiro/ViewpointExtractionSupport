@@ -15,6 +15,7 @@ getSpecificPlayer = function() return {} end
 getMouseX = function() return -1 end
 getMouseY = function() return -1 end
 getText = function(key) return key end
+getTexture = function() return nil end
 getTextManager = function()
     return {
         MeasureStringX = function(_, _, text) return #tostring(text) * 6 end,
@@ -61,6 +62,7 @@ RPGSkillTreeUI = {
 }
 
 local palette = {
+    screen = {0.01, 0.03, 0.02},
     panel = { 0.01, 0.04, 0.03 }, row = { 0.02, 0.06, 0.04 },
     button = { 0.02, 0.07, 0.04 }, buttonHover = { 0.05, 0.15, 0.09 },
     edge = { 0.17, 0.5, 0.34 }, text = { 0.84, 0.95, 0.87 },
@@ -79,6 +81,7 @@ pda = {
     Controls = function() return { {}, {}, { x = 980 } } end,
     ScreenTitle = function() return "" end,
     DockRect = function() return { x = 0, y = 0, w = 900, h = 600 } end,
+    DrawScreen = function() end,
     TransitionActive = function() return false end,
     DockActive = function(ui) return ui._pdaDocked and #ui._pdaDocked > 0 end,
     Sound = function() end,
@@ -86,18 +89,28 @@ pda = {
         local active = {}
         for _, entry in ipairs(pda.DOCK) do
             local window = entry.get()
-            if window and window:isVisible() then active[#active + 1] = window end
+            if window and window:isVisible() then
+                active[#active + 1] = window
+                window._pdaDock = true
+                pda._docked[window] = {entry = entry}
+            end
         end
         ui._pdaDocked = active
+        ui._pdaTop = active[#active]
         return active
     end,
 }
+pda.Back = function(ui)
+    if ui._pdaTop then ui._pdaTop:setVisible(false) end
+    pda.DockTick(ui)
+end
 package.preload["PRPGE_PDA"] = function() return pda end
 
 local panel
 local clientState = { state = "HIDEOUT", selectedTownKey = "Rosewood" }
 ExtractionMode = {
-    Client = { stateFor = function() return clientState end },
+    TextLayout = { viewport = function() return 900, 600 end, height = function() return 16 end },
+    Client = { stateFor = function() return clientState end, sendCommand = function() end },
     Config = {},
     ControllerPanelInstances = {},
     openAdminPanel = function() return "native-admin" end,
@@ -126,55 +139,67 @@ ExtractionMode = {
     end,
 }
 
+ExtractionMode.openUpgradePanel = function()
+    local window = {visible = true, children = {}, playerNum = 0}
+    function window:isVisible() return self.visible end
+    function window:setVisible(v) self.visible = v end
+    function window:prerender()
+        self.layoutW, self.layoutH = ExtractionMode.TextLayout.viewport(0, 960, 900)
+        if self.fail then error("native layout error") end
+    end
+    ExtractionMode.UpgradePanelInstance = window
+    return window
+end
+
+ExtractionMode.openGaragePanel = function(player, bypassControlTile)
+    assert(player ~= nil, "the garage must receive the local player")
+    local window = {visible = true, children = {}, requiresControlTile = bypassControlTile ~= true}
+    function window:isVisible() return self.visible end
+    function window:setVisible(value) self.visible = value end
+    ExtractionMode.GaragePanelInstance = window
+    return window
+end
+
+local dashboardContext
+package.preload["ViewpointExtractionSupport/ExtractionPDADashboard"] = function()
+    return { new = function(context)
+        dashboardContext = context
+        return {
+            navigation = function(ui)
+                ui._vesExtractionHits = {{x = 20, y = 80, w = 160, h = 32,
+                    action = function() context.open("openTownPicker") end}}
+                return 124
+            end,
+            bodyTop = function() return 124 end,
+            render = function() end,
+        }
+    end }
+end
+
 local integration = require "ViewpointExtractionSupport/ExtractionPDA"
 Events.OnGameStart.fire()
 assert(integration.install(), "the compatible PDA hooks should install")
+RPGSkillTreeUI.open()
+RPGSkillTreeUI.render(RPGSkillTreeUI.instance)
 
 local found = false
 for _, tab in ipairs(RPGSkillTreeUI.instance._tabRects) do if tab.id == "extraction" then found = true end end
 assert(found, "the Extraction tab should be added before Settings")
 assert(RPGSkillTreeUI.instance._tabRects[1].id == "home" and RPGSkillTreeUI.instance._tabRects[2].id == "extraction",
     "the Extraction tab should appear immediately after the Dossier tab")
-assert(TAB_ICON.extraction == "Pin", "the tab should use the PDA pin icon")
 
-local opened = ExtractionMode.openControllerPanel(0)
-assert(opened == panel, "panel open requests should keep returning the Extraction Mode panel")
-assert(pda.Tab == "extraction", "opening an Extraction Mode screen should select the PDA Extraction tab")
-assert(RPGSkillTreeUI.instance._pdaDocked[1] == panel, "the Extraction panel should be docked in the PDA")
-assert(panel.backgroundColor.r == palette.panel[1] and panel.borderColor.g == palette.edge[2],
-    "docked panels should inherit the PDA palette")
-panel.children[1] = {
-    Type = "ISButton",
-    backgroundColor = { r = 0.1, g = 0.1, b = 0.1, a = 1 },
-    borderColor = { r = 0.1, g = 0.1, b = 0.1, a = 1 },
-    children = {},
-}
-pda.DockTick(RPGSkillTreeUI.instance)
-assert(panel.children[1].backgroundColor.r == palette.button[1],
-    "controls created after a panel opens should inherit the PDA palette")
-assert(ExtractionMode.openAdminPanel() == "native-admin" and pda.Tab == "extraction",
-    "admin-only routes must retain their original gate when the client is not an admin")
-
-panel:setVisible(false)
+ExtractionMode.openControllerPanel(0)
+assert(panel == nil, "controller menu must become the dashboard rather than a duplicate launcher")
+assert(pda.Tab == "extraction", "controller shortcut should select the dashboard")
+local opened = ExtractionMode.openTownPicker(0)
+assert(opened == ExtractionMode.TownPickerInstance, "dedicated pages should retain native return values")
+assert(RPGSkillTreeUI.instance._pdaDocked[1] == opened, "dedicated pages should remain docked")
+assert(ExtractionMode.openAdminPanel() == "native-admin", "admin permissions must stay with the original gate")
+opened:setVisible(false)
 pda.DockTick(RPGSkillTreeUI.instance)
 RPGSkillTreeUI.render(RPGSkillTreeUI.instance)
 assert(RPGSkillTreeUI.instance.homeHidden and #RPGSkillTreeUI.instance._vesExtractionHits > 0,
-    "the Extraction tab should render its PDA dashboard when no subpage is open")
-for _, hit in ipairs(RPGSkillTreeUI.instance._vesExtractionHits) do
-    assert(hit.route ~= "openHideoutSocial" and hit.route ~= "openDeployPanel",
-        "social and deployment actions should stay hidden when their features are unavailable")
-end
-clientState.hideoutSocial = {}
-clientState.pvpveLobby = true
-RPGSkillTreeUI.render(RPGSkillTreeUI.instance)
-local foundDeploy = false
-for _, hit in ipairs(RPGSkillTreeUI.instance._vesExtractionHits) do
-    if hit.route == "openDeployPanel" then
-        foundDeploy = true
-        assert(#hit.args == 1, "dashboard deployment should open the page rather than toggle it closed")
-    end
-end
-assert(foundDeploy, "hideout social and deployment actions should appear when available")
+    "dashboard must be available after closing a dedicated page")
 
 local button = RPGSkillTreeUI.instance._vesExtractionHits[1]
 assert(RPGSkillTreeUI.onMouseDown(RPGSkillTreeUI.instance, button.x + 2, button.y + 2),
@@ -184,7 +209,7 @@ assert(RPGSkillTreeUI.onMouseUp(RPGSkillTreeUI.instance, button.x + 2, button.y 
 assert(RPGSkillTreeUI.instance._pdaDocked[1] ~= nil,
     "dashboard actions should open their panel in the PDA")
 
-panel:setVisible(false)
+ExtractionMode.TownPickerInstance:setVisible(false)
 RPGSkillTreeUI.instance._pdaDocked = {}
 RPGSkillTreeUI.instance = nil
 nextPhase = "opening"
@@ -195,3 +220,28 @@ RPGSkillTreeUI.instance._pda.phase = "ready"
 Events.OnTick.fire()
 assert(RPGSkillTreeUI.instance._pdaDocked[1] == ExtractionMode.TownPickerInstance,
     "queued screens should be docked once the PDA finishes opening")
+
+dashboardContext.navigate("upgrades")
+local upgrades = ExtractionMode.UpgradePanelInstance
+assert(RPGSkillTreeUI.instance._pdaTop == upgrades, "navigation must close the previous page")
+assert(not ExtractionMode.TownPickerInstance:isVisible(), "previous windows must not remain behind the new page")
+upgrades:prerender()
+local rect = pda.DockRect(RPGSkillTreeUI.instance)
+assert(upgrades.layoutW == rect.w and upgrades.layoutH == rect.h, "native lists must fill the PDA body below navigation")
+local _, originalHeight = ExtractionMode.TextLayout.viewport(0, 960, 900)
+assert(originalHeight == 600, "native viewport behavior must remain unchanged outside the docked layout")
+upgrades.fail = true
+assert(not pcall(upgrades.prerender, upgrades))
+local _, restoredHeight = ExtractionMode.TextLayout.viewport(0, 960, 900)
+assert(restoredHeight == 600, "a layout error must restore the viewport scope")
+upgrades.fail = false
+dashboardContext.navigate("home")
+assert(not pda.DockActive(RPGSkillTreeUI.instance), "returning home must close the native subpage")
+for _ = 1, 3 do
+    dashboardContext.navigate("garage")
+    local garage = ExtractionMode.GaragePanelInstance
+    assert(not garage.requiresControlTile, "PDA garage access must not auto-close away from the world control tile")
+    assert(RPGSkillTreeUI.instance._pdaTop == garage and #RPGSkillTreeUI.instance._pdaDocked == 1,
+        "reopening the garage must consistently display exactly one page")
+    dashboardContext.navigate("home")
+end
