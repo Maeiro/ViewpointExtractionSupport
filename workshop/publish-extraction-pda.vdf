@@ -1,0 +1,27 @@
+"workshopitem"
+{
+	"appid"		"108600"
+	"publishedfileid"		"3831366933"
+	"contentfolder"		"D:\\SteamCMD\\workshop\\ExtractionModePDA\\content"
+	"previewfile"		"D:\\SteamCMD\\workshop\\ExtractionModePDA\\preview.jpg"
+	"visibility"		"0"
+	"title"		"Extraction Mode PDA Integration"
+	"description"		"[h1]Extraction Mode PDA Integration[/h1]
+Adds Extraction Mode screens to the ProjectRPGExpanded Survivor PDA.
+[h2]Features[/h2]
+[list][*]Adds an Extraction tab and lets you choose it as the PDA's startup screen.
+[*]Opens destination, hideout upgrade, contact and trade, garage, deployment, social, admin and debug screens inside the PDA.
+[*]Shows destination, team readiness, hideout generator controls and a mission summary on the dashboard.
+[*]Lets you track an unfinished mission and see its objectives and requirements on the dashboard.
+[*]Uses the PDA's own language setting, with English and Brazilian Portuguese text.
+[*]Hides the native Extraction Mode interface while its PDA interface is active, with compatibility handling for the player card and Ergonomic UI.[/list]
+[h2]Requirements[/h2]
+[list][*]Project Zomboid Build 42.21 or newer
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3785397275]Extraction Mode[/url]
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3826426915]ProjectRPGExpanded[/url][/list]
+This addon is independent of Viewpoint Extraction Support. If the installed PDA does not provide the expected interface methods, Extraction Mode's original screens remain available.
+
+Workshop ID: 3831366933
+Mod ID: ExtractionModePDA"
+	"changenote" "English-only Workshop description."
+}

@@ -1,8 +1,8 @@
 name=Extraction Mode PDA Integration
 id=ExtractionModePDA
 author=Maeiro
-description=Adds Extraction Mode screens and a mission dashboard to ProjectRPGExpanded's PDA.
-modversion=0.1.0
+description=Adds Extraction Mode screens, mission tracking and contextual boarding to the ProjectRPGExpanded PDA.
+modversion=0.1.1
 versionMin=42.21.0
 require=ExtractionMode,ProjectRPGExpanded
 loadModAfter=ExtractionMode,ProjectRPGExpanded

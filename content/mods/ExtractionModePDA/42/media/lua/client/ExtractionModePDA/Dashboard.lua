@@ -189,15 +189,23 @@ function Dashboard.new(context)
             end}
         end
         local hud = ExtractionMode.HUDInstance
-        if not (hud and hud.action and player()) then return nil end
-        hud:updateContent(data, player())
+        local currentPlayer = player()
+        if not (hud and hud.action and currentPlayer) then return nil end
+        hud:updateContent(data, currentPlayer)
         if not hud.action:isVisible() then return nil end
-        local label, phase = hud.action.title, data.state
+        local nativeLabel, phase = hud.action.title, data.state
+        local label = nativeLabel
+        if phase == config.STATE_BOARDING then
+            label = currentPlayer:getVehicle() ~= nil and text("ExitVehicleToBoard", "EXIT VEHICLE TO BOARD")
+                or data.boardingPendingSelf == true and text("BoardingHelicopter", "BOARDING EXTRACTION HELICOPTER...")
+                or text("BoardExtraction", "BOARD EXTRACTION HELICOPTER")
+        end
         return {label = label, enabled = hud.action.enable ~= false, action = function()
             local current = getState(0)
-            if current.state ~= phase then return end
-            hud:updateContent(current, player())
-            if hud.action:isVisible() and hud.action.enable ~= false and hud.action.title == label then hud:onAction() end
+            local activePlayer = player()
+            if current.state ~= phase or not activePlayer then return end
+            hud:updateContent(current, activePlayer)
+            if hud.action:isVisible() and hud.action.enable ~= false and hud.action.title == nativeLabel then hud:onAction() end
         end}
     end
     local function townBlocked(data, choice)

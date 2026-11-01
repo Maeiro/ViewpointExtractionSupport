@@ -17,6 +17,7 @@ The integration is independent of Viewpoint Extraction Support. Install this mod
 - Adds an Extraction tab and makes it available as the PDA's initial screen.
 - Routes Extraction Mode's destination, upgrade, contact, garage, deploy, social, administrative, and debug screens through the PDA.
 - Provides a dashboard with destination selection, raid readiness, hideout generator controls, and a mission summary.
+- Shows a contextual board button in Operation Status while Extraction Mode makes boarding available, using its native action.
 - Lets each character select an unfinished mission to track, showing its objectives and requirements on the dashboard.
 - Uses the PDA's internal language selection for English and Brazilian Portuguese text.
 - Keeps Extraction Mode's native HUD hidden while its interface is active in the PDA, and applies compatibility handling for the ProjectRPGExpanded player card and Ergonomic UI.
