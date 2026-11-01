@@ -130,6 +130,9 @@ local state = {
     localizationHook = nil,
     getTextHook = nil,
     startTabRowsWrapper = nil,
+    playerCardClampWrapper = nil,
+    playerCardFrontWrapper = nil,
+    playerCardPollWrapper = nil,
 }
 
 local function diagnostic(key, message)
@@ -974,6 +977,212 @@ local function installExtractionStartTab(pda)
     return true
 end
 
+local function installPlayerCardCompatibility()
+    local ok, playerCard = pcall(require, "PRPGE_PlayerCard")
+    if not ok or type(playerCard) ~= "table" then return false end
+
+    local inventoryWindows = {
+        "ErgUIPanel", "ErgUIClusterFrame", "ErgUIBarVisPopup", "ErgUITypeWindow",
+        "ErgUISettings", "ErgUIReleaseNotesWindow", "ErgUIQuantityPicker",
+    }
+    if type(playerCard.WINDOWS) == "table" then
+        for _, name in ipairs(inventoryWindows) do
+            local found = false
+            for _, existing in ipairs(playerCard.WINDOWS) do
+                if existing == name then found = true; break end
+            end
+            if not found then playerCard.WINDOWS[#playerCard.WINDOWS + 1] = name end
+        end
+    end
+
+    local function overlappingErgonomicWindows(card)
+        if not (UIManager and UIManager.getUI and card and card.javaObject) then return nil end
+        local listOk, list = pcall(function() return UIManager.getUI() end)
+        if not listOk or not list then return nil end
+
+        local cardOk, x, y, width, height = pcall(function()
+            return card:getAbsoluteX(), card:getAbsoluteY(), card:getWidth(), card:getHeight()
+        end)
+        if not cardOk then return nil end
+
+        local windows, seen = {}, {}
+        local function addWindow(element)
+            local javaObject = element and element.javaObject
+            if not element or not javaObject or seen[javaObject] then return end
+            seen[javaObject] = true
+
+            local visibleOk, visible = pcall(function() return element:isVisible() end)
+            if not visibleOk or not visible then return end
+            local index = list:indexOf(javaObject)
+            if index < 0 then return end
+
+            local boundsOk, left, top, elementWidth, elementHeight = pcall(function()
+                return element:getAbsoluteX(), element:getAbsoluteY(), element:getWidth(), element:getHeight()
+            end)
+            if boundsOk and x < left + elementWidth and left < x + width
+                and y < top + elementHeight and top < y + height then
+                windows[#windows + 1] = {
+                    index = index,
+                    javaObject = javaObject,
+                    x = left,
+                    y = top,
+                    width = elementWidth,
+                    height = elementHeight,
+                }
+            end
+        end
+
+        local host = ErgonomicUI and ErgonomicUI.panel
+        addWindow(host)
+        for _, frame in pairs(host and host._frames or {}) do addWindow(frame) end
+        for _, name in ipairs(inventoryWindows) do
+            local class = _G[name]
+            addWindow(class and class.instance)
+        end
+        return list, windows
+    end
+
+    local function keepPlayerCardBehindErgonomicUI(card)
+        local list, windows = overlappingErgonomicWindows(card)
+        if not list or #windows == 0 then return windows end
+
+        local firstWindow = windows[1]
+        for _, window in ipairs(windows) do
+            if window.index < firstWindow.index then firstWindow = window end
+        end
+
+        local parts = {card, card.portrait, card.levelBadge}
+        local entries, entryByPart, highestIndex = {}, {}, -1
+        for _, part in ipairs(parts) do
+            local javaObject = part and part.javaObject
+            if javaObject then
+                local index = list:indexOf(javaObject)
+                if index >= 0 then
+                    local entry = {index = index, javaObject = javaObject}
+                    entries[#entries + 1] = entry
+                    entryByPart[part] = entry
+                    highestIndex = math.max(highestIndex, index)
+                end
+            end
+        end
+        if highestIndex <= firstWindow.index then return windows end
+
+        local removalOrder = {}
+        for _, entry in ipairs(entries) do removalOrder[#removalOrder + 1] = entry end
+        table.sort(removalOrder, function(a, b) return a.index > b.index end)
+
+        local reordered = pcall(function()
+            for _, entry in ipairs(removalOrder) do list:remove(entry.index) end
+
+            local insertAt = list:indexOf(firstWindow.javaObject)
+            if insertAt < 0 then error("Ergonomic UI window left the UI stack") end
+            for _, part in ipairs(parts) do
+                local entry = entryByPart[part]
+                if entry then
+                    list:add(insertAt, entry.javaObject)
+                    insertAt = insertAt + 1
+                end
+            end
+        end)
+
+        if not reordered then
+            diagnostic("player-card-ergonomic-order", "Could not reorder the ProjectRPGExpanded HUD below Ergonomic UI")
+            pcall(function()
+                for _, entry in ipairs(entries) do
+                    if list:indexOf(entry.javaObject) < 0 then
+                        list:add(math.min(entry.index, list:size()), entry.javaObject)
+                    end
+                end
+            end)
+        else
+            diagnostic("player-card-ergonomic-order", "Layered the ProjectRPGExpanded HUD below Ergonomic UI")
+        end
+        return windows
+    end
+
+    local function safelyKeepPlayerCardBehindErgonomicUI(card)
+        local ok, windows = pcall(keepPlayerCardBehindErgonomicUI, card)
+        if not ok then
+            diagnostic("player-card-ergonomic-error", "HUD layering compatibility failed: " .. tostring(windows))
+            return nil
+        end
+        if windows and #windows > 0 then
+            diagnostic("player-card-ergonomic-detected", "Detected Ergonomic UI window(s) overlapping the ProjectRPGExpanded HUD")
+        end
+        return windows
+    end
+
+    local function pointerOverErgonomicWindow(windows)
+        if not windows or not getMouseX or not getMouseY then return false end
+        local x, y = getMouseX(), getMouseY()
+        for _, window in ipairs(windows) do
+            if x >= window.x and y >= window.y
+                and x < window.x + window.width and y < window.y + window.height then
+                return true
+            end
+        end
+        return false
+    end
+
+    local function syncPlayerCardVisibility(card, overlapsInventory)
+        if overlapsInventory then
+            card._vesErgonomicHidden = true
+            if card:isVisible() then card:setVisible(false) end
+            if card.portrait and card.portrait:isVisible() then card.portrait:setVisible(false) end
+            if card.levelBadge and card.levelBadge:isVisible() then card.levelBadge:setVisible(false) end
+        elseif card._vesErgonomicHidden then
+            card._vesErgonomicHidden = nil
+            if card._shown then card:setVisible(true) end
+        end
+    end
+
+    if type(playerCard.Clamp) == "function" and playerCard.Clamp ~= state.playerCardClampWrapper then
+        local originalClamp = playerCard.Clamp
+        state.playerCardClampWrapper = function(card, ...)
+            local requestedY = card and tonumber(card.y)
+            local result = originalClamp(card, ...)
+            if requestedY and card and card.setY and type(playerCard.Screen) == "function" then
+                local screenOk, _, screenHeight = pcall(playerCard.Screen)
+                screenHeight = screenOk and tonumber(screenHeight)
+                if screenHeight and tonumber(card.height) then
+                    local maxY = math.max(0, screenHeight - card.height - 4)
+                    local y = math.max(0, math.min(requestedY, maxY))
+                    if card.y ~= y then card:setY(y) end
+                end
+            end
+            return result
+        end
+        playerCard.Clamp = state.playerCardClampWrapper
+    end
+
+    if type(playerCard.Front) == "function" and playerCard.Front ~= state.playerCardFrontWrapper then
+        local originalFront = playerCard.Front
+        state.playerCardFrontWrapper = function(card, ...)
+            local windows = safelyKeepPlayerCardBehindErgonomicUI(card)
+            if windows and #windows > 0 then return false end
+            return originalFront(card, ...)
+        end
+        playerCard.Front = state.playerCardFrontWrapper
+    end
+
+    if type(playerCard.Poll) == "function" and playerCard.Poll ~= state.playerCardPollWrapper then
+        local originalPoll = playerCard.Poll
+        state.playerCardPollWrapper = function(card, ...)
+            local windows = safelyKeepPlayerCardBehindErgonomicUI(card)
+            local overlapsInventory = windows and #windows > 0
+            syncPlayerCardVisibility(card, overlapsInventory)
+            if overlapsInventory then
+                diagnostic("player-card-ergonomic-hidden", "Temporarily hiding the ProjectRPGExpanded HUD where it overlaps Ergonomic UI")
+            end
+            if pointerOverErgonomicWindow(windows) then return false end
+            return originalPoll(card, ...)
+        end
+        playerCard.Poll = state.playerCardPollWrapper
+        diagnostic("player-card-ergonomic-installed", "Installed ProjectRPGExpanded HUD compatibility for Ergonomic UI")
+    end
+    return true
+end
+
 function Integration.install()
     if state.installed then return true end
     local ok, pda = pcall(require, "PRPGE_PDA")
@@ -987,6 +1196,7 @@ function Integration.install()
     if failure then state.failure = failure; return false end
     state.pda, state.ui = pda, ui
     installExtractionStartTab(pda)
+    installPlayerCardCompatibility()
     state.dashboard = Dashboard.new({text = dashboardText, state = stateFor, town = townName,
         admin = adminControlsVisible, navigate = navigate,
         open = function(name) return invoke(name, pack(0)) end})
