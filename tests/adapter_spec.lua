@@ -25,12 +25,14 @@ end } }
 package.loaded["PZAPI/ModOptions"] = true
 package.loaded["ExtractionMode/Config"] = true
 package.loaded["ExtractionMode/Util"] = true
+package.preload["ViewpointExtractionSupport/Night"] = function() return {} end
 
 local now, multiplayer, active, available, ready, directional = 0, false, true, true, false, true
 local models, seen, suppressed, audioPosition, groundAreas, pendingAreas = {}, {}, false, nil, {}, {}
 local player = { isDead = function() return false end, getX = function() return 100 end, getY = function() return 200 end }
 getSpecificPlayer = function(number) if number == 0 or number == 1 then return player end end
 getTimestampMs = function() return now end
+ZombRand = function(max) return max and max > 0 and 0 or 0 end
 isClient = function() return multiplayer end
 sendClientCommand = function() error("the visual addon must not send server commands") end
 ExtractionMode = {
@@ -39,6 +41,8 @@ ExtractionMode = {
     ClientStates = {},
 }
 ViewpointExtractionSupportBridge = {
+    registerFtzAircraft = function() end,
+    configureFtzAircraft = function() end,
     suppressNative = function(value) suppressed = value end,
     nativeAudioPosition = function(x, y, height) audioPosition = { x = x, y = y, height = height } end,
     clearNativeAudioPosition = function() audioPosition = nil end,
@@ -46,6 +50,10 @@ ViewpointExtractionSupportBridge = {
     area = function(x, y, z, radius) pendingAreas[#pendingAreas + 1] = { x = x, y = y, z = z, radius = radius } end,
     endAreas = function() groundAreas = pendingAreas end,
     clearAreas = function() groundAreas, pendingAreas = {}, {} end,
+    clearRopes = function() end,
+    beginRopes = function() end,
+    rope = function() end,
+    endRopes = function() end,
 }
 VisibleHelicopterEvent = {
     active = function() return active end,

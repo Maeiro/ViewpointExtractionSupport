@@ -11,6 +11,7 @@ require "ViewpointExtractionSupport/CountdownNotice"
 require "ViewpointExtractionSupport/Night"
 require "ViewpointExtractionSupport/NightMoodle"
 require "ViewpointExtractionSupport/EventNotifications"
+require "ViewpointExtractionSupport/ExtractionPDA"
 local Support = {}
 ViewpointExtractionSupport = Support
 
