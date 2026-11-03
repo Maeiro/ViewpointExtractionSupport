@@ -13,6 +13,8 @@ Adds Extraction Mode screens to the ProjectRPGExpanded Survivor PDA.
 [*]Opens destination, hideout upgrade, contact and trade, garage, deployment, social, admin and debug screens inside the PDA.
 [*]Shows destination, team readiness, hideout generator controls and a mission summary on the dashboard.
 [*]Lets you track an unfinished mission and see its objectives and requirements on the dashboard.
+[*]Explains that raids have no fixed end time and shows the next horde or wave timing when available.
+[*]Adds a Zombies category to ProjectRPGExpanded's server settings with per-stage Custom World Danger controls for zombie behavior, perception, infection and respawn rules.
 [*]Uses the PDA's own language setting, with English and Brazilian Portuguese text.
 [*]Hides the native Extraction Mode interface while its PDA interface is active.
 [*]Hides the ProjectRPGExpanded player portrait while the world map is open to prevent map icon rendering issues, and keeps the player card behind Ergonomic UI.[/list]
@@ -24,5 +26,5 @@ This addon is independent of Viewpoint Extraction Support. If the installed PDA 
 
 Workshop ID: 3831366933
 Mod ID: ExtractionModePDA"
-	"changenote" "Hides the player portrait while the world map is open to prevent map icon rendering issues."
+	"changenote" "0.1.4: Adds configurable zombie rules for each Custom World Danger stage."
 }

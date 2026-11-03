@@ -108,6 +108,28 @@ function Dashboard.new(context)
         if data.state == config.STATE_EXTRACTING then return text("Extracting", "EXTRACTION IN PROGRESS") end
         return data.state and text("InRaid", "IN RAID") or text("Waiting", "Waiting for Extraction Mode state...")
     end
+    local function raidThreatStatus(data)
+        if data.lateRaidHordeEnabled == false then return nil end
+        if tonumber(data.raidMode) == 2 and tonumber(data.hordeRemainingHours) then
+            return text("MajorHordeIn", "Major horde expected in %1 in-game hours", tostring(data.hordeRemainingHours))
+        end
+        if data.hordeWaveMode == true and (tonumber(data.hordeWaveIndex) or 0) > 0 then
+            if data.hordeWaveNextLabel then
+                return text("NextWaveAt", "Next wave scheduled for %1", tostring(data.hordeWaveNextLabel))
+            end
+            return nil
+        end
+        if data.hordeSpawned == true then
+            return text("RaidThreatActive", "Threat event active. No next arrival time is available.")
+        end
+        if data.hordeWindowImminent == true then
+            return text("HordeImminent", "A horde could arrive at any moment.")
+        end
+        if data.hordeWindowLabel then
+            return text("NextHordeAfter", "Next horde may arrive after %1", tostring(data.hordeWindowLabel))
+        end
+        return nil
+    end
     function view.navigation(ui, pda, selected)
         local Layout, data = ExtractionMode.TextLayout, getState(0)
         local bodyTop = view.bodyTop()
@@ -270,7 +292,10 @@ function Dashboard.new(context)
             team:add(phaseLabel(data))
             if data.state == config.STATE_EXTRACTING or data.state == config.STATE_BOARDING then
                 team:add(text("ExtractionTimer", "Extraction: %1 s", tostring(data.extractionSeconds or data.countdownSeconds or 0)))
-            else team:add(text("RaidHint", "Reach an extraction site to check the available actions.")) end
+            end
+            team:add(text("RaidEndCondition", "No fixed end time. The raid ends when all participants extract or die."))
+            local threatStatus = raidThreatStatus(data)
+            if threatStatus then team:add(threatStatus) end
         end
         local primary = operationAction(data)
         local optOut

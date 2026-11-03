@@ -4,6 +4,8 @@ Displays a randomly selected, enabled aircraft during Extraction Mode pickups in
 
 This is a compatibility addon for **Visible Helicopter Events**. It uses that mod's existing renderer and the selected aircraft assets; no third-party models, textures or renderer code are redistributed.
 
+The Extraction Mode interface for ProjectRPGExpanded is available separately as the optional [Extraction Mode PDA Integration](https://steamcommunity.com/sharedfiles/filedetails/?id=3831366933). It requires ProjectRPGExpanded and does not add a dependency to this addon.
+
 ## Requirements
 
 - Project Zomboid Build 42.21+.

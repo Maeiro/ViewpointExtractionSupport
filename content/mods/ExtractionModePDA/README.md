@@ -19,6 +19,8 @@ The integration is independent of Viewpoint Extraction Support. Install this mod
 - Provides a dashboard with destination selection, raid readiness, hideout generator controls, and a mission summary.
 - Shows a contextual board button in Operation Status while Extraction Mode makes boarding available, using its native action.
 - Lets each character select an unfinished mission to track, showing its objectives and requirements on the dashboard.
+- Explains that raids have no fixed end time and shows the next horde or wave timing when Extraction Mode provides it.
+- Adds a Zombies category to ProjectRPGExpanded's server settings with per-stage Custom World Danger controls for zombie behavior, perception, infection, and respawn rules.
 - Uses the PDA's internal language selection for English and Brazilian Portuguese text.
 - Keeps Extraction Mode's native HUD hidden while its interface is active in the PDA, hides the ProjectRPGExpanded player portrait while the world map is open to prevent map icon rendering issues, and keeps the player card behind Ergonomic UI.
 
