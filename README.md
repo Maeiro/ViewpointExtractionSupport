@@ -29,16 +29,10 @@ In **Mod Options > Viewpoint Extraction Support**:
 - **Show Extraction Mode HUD only with inventory open**: disabled by default. When enabled, hides Extraction Mode's top panel unless the player inventory, loot window or supported inventory interface is open.
 - **Use NeatUI styling for Extraction Mode menus**: enabled by default. When `NeatUI_Framework` is installed, applies its panel and button styling to the Extraction Mode HUD and menus. If NeatUI is missing, the normal Extraction Mode interface is used automatically; disabling this option always uses the normal interface.
 - During a deployment countdown, a green on-screen notice repeats the destination and remaining seconds, updating as the timer counts down.
-- When night events are enabled, colored warnings communicate the danger of the night and announce dawn. During an active raid, an amber radio warning appears once when the next horde is within one in-game hour.
+- During an active raid, an amber radio warning appears once when the next horde is within one in-game hour.
 - **Aircraft selection**: UH-1B is enabled by default to preserve the previous behavior. Other aircraft are off by default. Each extraction flight randomly selects one of the checked aircraft whose assets are currently available. If none of the selected models are available, the addon does not create a helicopter for that flight.
 
-In **Sandbox Options > Viewpoint Extraction Support: Night Events**:
-
-- **Enable Night Events**: disabled by default. When enabled, one luck level is selected for each night and sets both the container loot bonus and each zombie's chance to become a sprinter.
-- **Level weights**: configure the chance weight for each level. Weights are normalized automatically if they do not add up to 100; if all four are 0, Level 1 is always selected. The default weights are 50%, 35%, 10% and 5%.
-- **Per-level loot chance bonus**: adds a percentage to each item's container spawn chance. Defaults are 50%, 100%, 150% and 200%, which multiply the original chance by 1.5, 2, 2.5 and 3. This changes item appearance chances rather than stack sizes.
-- **Per-level sprinter chance**: each zombie has the configured chance to become a sprinter at night. Defaults are 10%, 20%, 33% and 50%. Zombies selected by this feature return to their original speed during the day.
-- When the selected level has a positive loot bonus, a positive Night Luck moodle appears at the matching level. Moodles in Lua uses the custom icon, while Dynamic Moodles displays the level-specific green border. In multiplayer the server shares the selected level with clients.
+Night Events, including configurable loot bonuses and sprinter chances, are provided by the separate **Survivor PDA Orchestrator** mod.
 
 English and Brazilian Portuguese interface text is included. Extraction timing, boarding interactions, zombie attraction and sound playback remain owned by Extraction Mode. With Viewpoint's directional aircraft audio enabled, the original native helicopter recording follows the extraction model's position and altitude. This addon creates visual aircraft, not physical vehicles or extra extraction destinations.
 

@@ -68,43 +68,4 @@ public final class Patches {
         }
     }
 
-    @Patch(className = "zombie.inventory.ItemPickerJava", methodName = "getActualSpawnChance", warmUp = true)
-    public static class NightLootChance {
-        @Patch.OnExit
-        public static void exit(@Patch.Argument(2) Object container, @Patch.Return(readOnly = false) float result) {
-            result = Bridge.scaleNightLootChance(result, container);
-        }
-    }
-
-    @Patch(className = "zombie.characters.Moodles.Moodle", methodName = "getLevel", warmUp = true)
-    public static class NightLuckMoodleLevel {
-        @Patch.OnExit
-        public static void exit(@Patch.This Object moodle, @Patch.Return(readOnly = false) int result) {
-            result = Bridge.nightLuckMoodleLevel(moodle, result);
-        }
-    }
-
-    @Patch(className = "zombie.characters.Moodles.Moodles", methodName = "getMoodleDescriptionString", warmUp = true)
-    public static class NightLuckMoodleDescription {
-        @Patch.OnExit
-        public static void exit(@Patch.Argument(0) Object moodleType, @Patch.Return(readOnly = false) String result) {
-            result = Bridge.nightLuckMoodleDescription(moodleType, result);
-        }
-    }
-
-    @Patch(className = "zombie.characters.Moodles.Moodles", methodName = "getGoodBadNeutral", warmUp = true)
-    public static class NightLuckMoodleAlignment {
-        @Patch.OnExit
-        public static void exit(@Patch.Argument(0) Object moodleType, @Patch.Return(readOnly = false) int result) {
-            result = Bridge.nightLuckMoodleGoodBadNeutral(moodleType, result);
-        }
-    }
-
-    @Patch(className = "zombie.characters.Moodles.Moodles", methodName = "UI_RefreshNeeded", warmUp = true)
-    public static class NightLuckMoodleRefresh {
-        @Patch.OnExit
-        public static void exit(@Patch.Return(readOnly = false) boolean result) {
-            result = Bridge.nightMoodleRefresh(result);
-        }
-    }
 }

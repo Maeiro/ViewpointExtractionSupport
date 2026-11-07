@@ -1,15 +1,5 @@
-local nightMessages = {
-    [1] = { text = "A small stroke of luck. Something fast is hunting nearby.", color = { 137, 232, 148 } },
-    [2] = { text = "Fortune smiles, but the dead are moving faster. Stay sharp.", color = { 255, 210, 64 } },
-    [3] = { text = "The night offers riches. The dead are running in numbers. Keep moving.", color = { 255, 140, 64 } },
-    [4] = { text = "Fortune is at its peak. Sprinters are everywhere. Run.", color = { 255, 80, 80 } },
-}
-
-local dawnMessage = "Dawn breaks. The dead have slowed, but the night's warning still stands: stay alert."
 local hordeMessage = "Radio: A horde is one hour out. Find cover or get moving."
 local noticeDuration = 256
-local lastNightCycle
-local nightWasActive = false
 local alertedHordeRaidId
 local hordeNoticeArmed = false
 
@@ -22,27 +12,6 @@ end
 
 local function showHordeNotice(player)
     showNotice(player, hordeMessage, { 255, 165, 64 })
-end
-
-local function updateNightNotice(player, night)
-    if night.enabled ~= true then
-        nightWasActive = false
-        lastNightCycle = night.nightCycle
-        return
-    end
-
-    if night.isNight then
-        if night.levelReady ~= true then return end
-        if not nightWasActive or lastNightCycle ~= night.nightCycle then
-            local notice = nightMessages[tonumber(night.level) or 1] or nightMessages[1]
-            showNotice(player, notice.text, notice.color)
-            nightWasActive = true
-            lastNightCycle = night.nightCycle
-        end
-    elseif nightWasActive then
-        showNotice(player, dawnMessage, { 175, 215, 255 })
-        nightWasActive = false
-    end
 end
 
 local function updateHordeNotice(player, data, config)
@@ -75,9 +44,6 @@ end
 local function update()
     local player = getSpecificPlayer and getSpecificPlayer(0)
     if not player then return end
-
-    local night = ViewpointExtractionSupportNight
-    if night then updateNightNotice(player, night) end
 
     local extraction = ExtractionMode
     local config = extraction and extraction.Config
