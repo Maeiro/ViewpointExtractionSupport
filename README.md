@@ -34,6 +34,8 @@ In **Mod Options > Viewpoint Extraction Support**:
 
 Night Events, including configurable loot bonuses and sprinter chances, are provided by the separate **Survivor PDA Orchestrator** mod.
 
+On the Project Viewpoint beta, full height hideout walls use the room color on the reverse face when the renderer selects a short Bunker or Railroad panel for that face.
+
 English and Brazilian Portuguese interface text is included. Extraction timing, boarding interactions, zombie attraction and sound playback remain owned by Extraction Mode. With Viewpoint's directional aircraft audio enabled, the original native helicopter recording follows the extraction model's position and altitude. This addon creates visual aircraft, not physical vehicles or extra extraction destinations.
 
 ## Integration

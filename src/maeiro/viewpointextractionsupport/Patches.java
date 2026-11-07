@@ -68,4 +68,11 @@ public final class Patches {
         }
     }
 
+    @Patch(className = "viewpoint.world.HiddenFaces", methodName = "decide", warmUp = true)
+    public static class HideoutWallBack {
+        @Patch.OnExit
+        public static void exit(@Patch.Argument(0) Object face) {
+            HideoutWalls.keepFullHeight(face);
+        }
+    }
 }
