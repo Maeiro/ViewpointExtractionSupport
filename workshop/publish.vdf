@@ -18,7 +18,6 @@ Displays configurable helicopter models during Extraction Mode pickups in Projec
 [*]Adds positional extraction audio, 3D extraction areas, terrain-following boarding markers, and the Board Extraction Helicopter interaction in Viewpoint.
 [*]Shows the destination and countdown during deployment, and warns raid participants when the next horde is one in-game hour away.
 [*]Optionally hides the Extraction Mode HUD unless an inventory or loot window is open, and optionally applies NeatUI styling when NeatUI_Framework is installed.
-[*]Optionally hides the ProjectRPGExpanded player HUD while Viewpoint UI inventory is open; enabled by default.
 [*]Adds a custom 3D model and inventory icon for Extraction Mode's flare gun, with a glowing red signal and smoke trail visible in Viewpoint. The cosmetic effect does not create fire or change extraction behavior.
 [*]Fixes missing hideout wall surfaces in the Viewpoint beta when a short Bunker or Railroad panel is selected on the reverse face of a full height wall.
 [/list]
@@ -41,5 +40,5 @@ Extraction timing, boarding rules, zombie attraction and server synchronization 
 Workshop ID: 3827358939
 Mod ID: ViewpointExtractionSupport
 "
-    "changenote" "0.1.28: Fixes repeated console errors from PDA HUD compatibility on Project Zomboid Lua. Uses protected native module loading and supports Build 42 mod IDs."
+    "changenote" "0.1.29: Moves PDA player HUD hiding for Viewpoint UI inventory to Viewpoint Extended Support, where this optional compatibility feature belongs."
 }

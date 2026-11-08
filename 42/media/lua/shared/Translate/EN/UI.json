@@ -31,7 +31,5 @@
   "UI_ViewpointExtractionSupport_Aircraft_FTZOrca": "FTZ Orca",
   "UI_ViewpointExtractionSupport_AircraftTooltip_FTZOrca": "Allow the FTZ Orca to appear. Requires FTZ Helicopters and its FTZ Flying dependency to be installed and enabled. Also makes it available to Visible Helicopter Events' random model selection.",
   "UI_ViewpointExtractionSupport_Aircraft_FTZHellcat": "FTZ Hellcat",
-  "UI_ViewpointExtractionSupport_AircraftTooltip_FTZHellcat": "Allow the FTZ Hellcat to appear. Requires FTZ Helicopters and its FTZ Flying dependency to be installed and enabled. Also makes it available to Visible Helicopter Events' random model selection.",
-  "UI_ViewpointExtractionSupport_HidePlayerHud": "Hide PDA player HUD in Viewpoint inventory",
-  "UI_ViewpointExtractionSupport_HidePlayerHudTooltip": "Temporarily hide the ProjectRPGExpanded player HUD, portrait and level badge while Viewpoint UI inventory is open. Restore the HUD when the inventory closes. Enabled by default."
+  "UI_ViewpointExtractionSupport_AircraftTooltip_FTZHellcat": "Allow the FTZ Hellcat to appear. Requires FTZ Helicopters and its FTZ Flying dependency to be installed and enabled. Also makes it available to Visible Helicopter Events' random model selection."
 }

@@ -6,7 +6,6 @@ local Flights = require "ViewpointExtractionSupport/Flights"
 local Areas = require "ViewpointExtractionSupport/Areas"
 local interaction = require "ViewpointExtractionSupport/Interaction"
 local HudVisibility = require "ViewpointExtractionSupport/HudVisibility"
-local PlayerHudVisibility = require "ViewpointExtractionSupport/PlayerHudVisibility"
 local NeatUI = require "ViewpointExtractionSupport/NeatUI"
 require "ViewpointExtractionSupport/CountdownNotice"
 require "ViewpointExtractionSupport/EventNotifications"
@@ -16,7 +15,6 @@ ViewpointExtractionSupport = Support
 
 local onlyWithInventory
 local useNeatUI
-local hidePlayerHud
 local selectedAircraft = {}
 local interactionTicks = 0
 local function installInteraction()
@@ -25,7 +23,6 @@ local function installInteraction()
     interaction.install()
     interaction.sync()
     HudVisibility.install(onlyWithInventory)
-    PlayerHudVisibility.install(hidePlayerHud)
     NeatUI.sync(useNeatUI)
 end
 
@@ -47,8 +44,6 @@ local showArea = options:addTickBox("showArea", "UI_ViewpointExtractionSupport_S
     "UI_ViewpointExtractionSupport_ShowAreaTooltip")
 local showFlares = options:addTickBox("showFlares", "UI_ViewpointExtractionSupport_ShowFlares", true,
     "UI_ViewpointExtractionSupport_ShowFlaresTooltip")
-hidePlayerHud = options:addTickBox("hidePlayerHud", "UI_ViewpointExtractionSupport_HidePlayerHud", true,
-    "UI_ViewpointExtractionSupport_HidePlayerHudTooltip")
 onlyWithInventory = options:addTickBox("onlyWithInventory", "UI_ViewpointExtractionSupport_OnlyWithInventory", false,
     "UI_ViewpointExtractionSupport_OnlyWithInventoryTooltip")
 useNeatUI = options:addTickBox("useNeatUI", "UI_ViewpointExtractionSupport_UseNeatUI", true,
@@ -266,7 +261,6 @@ function Support.collect()
 end
 
 options.apply = function()
-    PlayerHudVisibility.install(hidePlayerHud)
     FlareEffects.configure(showFlares:getValue())
     if not enabled:getValue() then clearFlights() end
     local bridge = getBridge()
