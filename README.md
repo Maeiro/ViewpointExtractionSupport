@@ -2,7 +2,7 @@
 
 Displays a randomly selected, enabled aircraft during Extraction Mode pickups in Project Viewpoint. The aircraft approaches the selected extraction point during the final approach countdown, lowers a 3D rope as it settles into a hover, and flies away with the rope retracting when the pickup ends or is cancelled. A translucent yellow cylindrical marker identifies the boarding area in the 3D world.
 
-This is a compatibility addon for **Visible Helicopter Events**. It uses that mod's existing renderer and the selected aircraft assets; no third-party models, textures or renderer code are redistributed.
+This is a compatibility addon for **Visible Helicopter Events**. Aircraft use that mod's existing renderer and the selected aircraft assets; aircraft models, textures and renderer code are not redistributed. The extraction flare gun uses an included CC0 model by Quaternius, adapted for Zomboid, with its source and credits in `assets/flaregun`.
 
 The Extraction Mode interface for ProjectRPGExpanded is available separately as the optional [Extraction Mode PDA Integration](https://steamcommunity.com/sharedfiles/filedetails/?id=3831366933). It requires ProjectRPGExpanded and does not add a dependency to this addon.
 
@@ -26,6 +26,7 @@ In **Mod Options > Viewpoint Extraction Support**:
 - **Show extraction helicopter**: enabled by default.
 - **Hover height (metres)**: 6–30 metres above the extraction point's floor; default 12.
 - **Show extraction area in 3D**: enabled by default. Displays every known extraction point as a yellow cylinder fading toward its top, even before a pickup is active. During boarding, the active rope's authoritative interaction radius replaces the point marker. This option works independently of the addon's helicopter display option. The matching extraction arrow is hidden in Viewpoint when the marker is rendered.
+- **Show red extraction flares**: enabled by default. Firing Extraction Mode's flare gun produces an emissive red signal that rises and slowly descends, with a red smoke trail, for 20 simulation seconds. The effect uses Viewpoint's native flame/smoke batch, including depth occlusion. It is visible in Viewpoint and does not create fire, damage, extra noise or additional extraction requests. The gun also has a dedicated 3D model and inventory icon; existing carried guns are updated on player creation or equipping. Its original ammunition, sound, damage and extraction behavior are preserved. In multiplayer, the shooter's effect starts immediately and the server relays the visual to other players within 150 tiles; the addon must be enabled on both sides for those remote effects. The server supplies the position and direction and limits repeated requests.
 - **Show Extraction Mode HUD only with inventory open**: disabled by default. When enabled, hides Extraction Mode's top panel unless the player inventory, loot window or supported inventory interface is open.
 - **Use NeatUI styling for Extraction Mode menus**: enabled by default. When `NeatUI_Framework` is installed, applies its panel and button styling to the Extraction Mode HUD and menus. If NeatUI is missing, the normal Extraction Mode interface is used automatically; disabling this option always uses the normal interface.
 - During a deployment countdown, a green on-screen notice repeats the destination and remaining seconds, updating as the timer counts down.
@@ -37,6 +38,8 @@ Night Events, including configurable loot bonuses and sprinter chances, are prov
 On the Project Viewpoint beta, full height hideout walls use the room color on the reverse face when the renderer selects a short Bunker or Railroad panel for that face.
 
 English and Brazilian Portuguese interface text is included. Extraction timing, boarding interactions, zombie attraction and sound playback remain owned by Extraction Mode. With Viewpoint's directional aircraft audio enabled, the original native helicopter recording follows the extraction model's position and altitude. This addon creates visual aircraft, not physical vehicles or extra extraction destinations.
+
+The flare effect follows Extraction Mode's simulation clock, including single-player pause and time acceleration. It is a cosmetic signal launched upward from the shooter, rather than a damaging ballistic projectile or a source of terrain lighting. Its visibility option is independent of the aircraft display. Lua resets, disconnection and returning to the main menu clear active signals. Flare assets require the addon on the server and clients in multiplayer; no original Extraction Mode files are replaced.
 
 ## Integration
 
@@ -78,6 +81,10 @@ python tests/run.py --visible-helicopter-root 'D:\SteamLibrary\steamapps\worksho
 
 It covers authoritative site selection, interpolated countdowns, delayed packets, approach/hover/departure, elevated sites, cancellation, duplicate observers, simultaneous raids, readiness fallback, disabled/missing dependencies, stale multiplayer state and cleanup without removing other mods' aircraft. Audio checks reuse the installed renderer's attenuation code with FMOD and listener fixtures to verify model coordinates, terrain/altitude conversion, hearing rules, isometric behavior and reuse of the existing event. Marker checks submit to the installed Viewpoint decal batch and verify a closed cylinder, inside/outside faces, radius, gradient UVs, camera motion, elevated floors, unavailable assets and independent option handling. Arrow checks cover destination/texture matching, isometric fallback, original active state and restoration after drawing.
 
+Flare Lua checks cover appearance migration, unchanged native commands, SP pause/expiry, MP position authority, duplicate requests, observer range and cleanup. `tests/test_flares.ps1` runs the new renderer against Viewpoint's actual `FlameDraws` class, checking native-card preservation, emissive flags, atlas UVs, terrain/floor height, capacity and asset readiness. Pass `-ViewpointJar`, `-CompileViewpointJar` and, if needed, `-JavaExe`; use a JDK/runtime that can read the installed Viewpoint class version, or a header-compatible compile JAR with the original JAR at runtime. The flare's final in-game alignment and appearance still need a visual check in SP and multiplayer.
+
 The UH-1B flight, rope, positional audio and extraction markers have been manually verified in single-player. The optional aircraft model integrations, including FTZ aircraft, still need an in-game visual check. Multiplayer behavior also remains to be verified.
 
 Credits: Zakreon (Extraction Mode), 50ShadesOfMyCow (Visible Helicopter Events), User (UH-1B Helicopter), the FTZ Helicopters authors, and the authors of Project Viewpoint, ZombieBuddy and Aviation Core.
+
+Flare gun: [Quaternius, CC0](https://poly.pizza/m/44H9OBUqTC). Asset conversion, inventory icon and procedural signal textures are included with this addon. Rebuild them with `py tools/build_flare_assets.py` (NumPy and Pillow).

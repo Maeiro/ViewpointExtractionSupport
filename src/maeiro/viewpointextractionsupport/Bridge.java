@@ -72,6 +72,22 @@ public final class Bridge {
         ExtractionRope.clear();
     }
 
+    public static void beginFlares() {
+        FlareEffects.begin();
+    }
+
+    public static void flare(double x, double y, double z, double dx, double dy, double age) {
+        FlareEffects.add(x, y, z, dx, dy, age);
+    }
+
+    public static void endFlares() {
+        FlareEffects.end();
+    }
+
+    public static void clearFlares() {
+        FlareEffects.clear();
+    }
+
     public static void collectFlights() {
         try {
             if (triggerEvent == null) {

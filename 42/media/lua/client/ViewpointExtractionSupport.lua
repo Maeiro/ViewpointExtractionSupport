@@ -9,6 +9,7 @@ local HudVisibility = require "ViewpointExtractionSupport/HudVisibility"
 local NeatUI = require "ViewpointExtractionSupport/NeatUI"
 require "ViewpointExtractionSupport/CountdownNotice"
 require "ViewpointExtractionSupport/EventNotifications"
+local FlareEffects = require "ViewpointExtractionSupport/FlareEffects"
 local Support = {}
 ViewpointExtractionSupport = Support
 
@@ -41,6 +42,8 @@ local hoverHeight = options:addSlider("hoverHeight", "UI_ViewpointExtractionSupp
     6, 30, 1, 12, "UI_ViewpointExtractionSupport_HoverHeightTooltip")
 local showArea = options:addTickBox("showArea", "UI_ViewpointExtractionSupport_ShowArea", true,
     "UI_ViewpointExtractionSupport_ShowAreaTooltip")
+local showFlares = options:addTickBox("showFlares", "UI_ViewpointExtractionSupport_ShowFlares", true,
+    "UI_ViewpointExtractionSupport_ShowFlaresTooltip")
 onlyWithInventory = options:addTickBox("onlyWithInventory", "UI_ViewpointExtractionSupport_OnlyWithInventory", false,
     "UI_ViewpointExtractionSupport_OnlyWithInventoryTooltip")
 useNeatUI = options:addTickBox("useNeatUI", "UI_ViewpointExtractionSupport_UseNeatUI", true,
@@ -258,6 +261,7 @@ function Support.collect()
 end
 
 options.apply = function()
+    FlareEffects.configure(showFlares:getValue())
     if not enabled:getValue() then clearFlights() end
     local bridge = getBridge()
     if not showArea:getValue() and bridge then bridge.clearAreas() end
@@ -265,6 +269,8 @@ options.apply = function()
     NeatUI.sync(useNeatUI)
     if ExtractionMode.UIVisibility then ExtractionMode.UIVisibility.updateHUD() end
 end
+
+FlareEffects.configure(showFlares:getValue())
 
 -- Submit inside the renderer's collection cycle, before it removes unseen flights.
 LuaEventManager.AddEvent("OnViewpointExtractionFlights")

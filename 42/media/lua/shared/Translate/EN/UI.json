@@ -5,6 +5,8 @@
   "UI_ViewpointExtractionSupport_HoverHeight": "Hover height (metres)",
   "UI_ViewpointExtractionSupport_HoverHeightTooltip": "Height above the extraction point while waiting for survivors to board. Does not change the extraction location or boarding rules.",
   "UI_ViewpointExtractionSupport_ShowArea": "Show extraction area in 3D",
+  "UI_ViewpointExtractionSupport_ShowFlares": "Show red extraction flares",
+  "UI_ViewpointExtractionSupport_ShowFlaresTooltip": "Show a glowing red signal rising into the sky with a red smoke trail after firing an extraction flare. Cosmetic only; does not start fires or change extraction rules. Nearby multiplayer shots require this addon on the server and clients.",
   "UI_ViewpointExtractionSupport_ShowAreaTooltip": "Show a translucent yellow cylinder during boarding, using Extraction Mode's boarding radius. Replaces the extraction arrow in Viewpoint while the marker is visible.",
   "UI_ViewpointExtractionSupport_OnlyWithInventory": "Show Extraction Mode HUD only with inventory open",
   "UI_ViewpointExtractionSupport_OnlyWithInventoryTooltip": "Hide the Extraction Mode panel unless the player inventory, loot window or supported inventory UI is open. Disabled by default.",

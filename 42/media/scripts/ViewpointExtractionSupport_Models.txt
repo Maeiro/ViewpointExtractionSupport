@@ -1,0 +1,27 @@
+module Base
+{
+    model VESExtractionFlareGun
+    {
+        mesh = weapons/VESExtractionFlareGun,
+        texture = weapons/VESExtractionFlareGun,
+        shader = basicEffect,
+        static = true,
+        scale = 0.6375,
+
+        attachment muzzle
+        {
+            offset = 0.0 0.233 -0.0786,
+            rotate = -90.0 0.0 0.0,
+        }
+        attachment world
+        {
+            offset = 0.0 0.06 0.0,
+            rotate = 0.0 0.0 0.0,
+        }
+        attachment Bip01_Prop2
+        {
+            offset = -0.0338 0.0424 0.0,
+            rotate = 90.0008 1.1964 -90.0396,
+        }
+    }
+}

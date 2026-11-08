@@ -1,4 +1,6 @@
 {
+  "UI_ViewpointExtractionSupport_ShowFlares": "Mostrar sinalizadores vermelhos de extração",
+  "UI_ViewpointExtractionSupport_ShowFlaresTooltip": "Mostra um sinal vermelho brilhante subindo ao céu com um rastro de fumaça vermelha após disparar a flare de extração. Apenas visual; não inicia incêndios nem altera as regras de extração. Disparos próximos no multiplayer exigem este addon no servidor e nos clientes.",
   "UI_ViewpointExtractionSupport_Title": "Viewpoint Extraction Support",
   "UI_ViewpointExtractionSupport_Enabled": "Mostrar helicóptero de extração",
   "UI_ViewpointExtractionSupport_EnabledTooltip": "Mostra uma aeronave selecionada durante a aproximação final, o embarque e a partida do Extraction Mode. Requer Show event aircraft no Visible Helicopter Events e ao menos uma aeronave selecionada e disponível.",

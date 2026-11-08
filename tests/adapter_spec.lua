@@ -8,7 +8,7 @@ local function event()
         fire = function(...) for _, fn in ipairs(handlers) do fn(...) end end,
     }
 end
-Events = { OnGameStart = event(), OnMainMenuEnter = event(), OnDisconnect = event(), OnTick = event(), OnPreUIDraw = event() }
+Events = { OnGameStart = event(), OnMainMenuEnter = event(), OnDisconnect = event(), OnTick = event(), OnPreUIDraw = event(), OnServerCommand = event() }
 LuaEventManager = { AddEvent = function(name) Events[name] = Events[name] or event() end }
 
 local values = {}

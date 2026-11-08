@@ -39,6 +39,14 @@ public final class Patches {
         }
     }
 
+    @Patch(className = "viewpoint.world.Flames", methodName = "snapshot", warmUp = true)
+    public static class ExtractionFlareVisual {
+        @Patch.OnExit
+        public static void exit(@Patch.Argument(0) Object frame) {
+            FlareEffects.capture(frame);
+        }
+    }
+
     @Patch(className = "viewpoint.render.WorldRenderer", methodName = "drawWeather", warmUp = true)
     public static class ExtractionRopeVisual {
         @Patch.OnExit

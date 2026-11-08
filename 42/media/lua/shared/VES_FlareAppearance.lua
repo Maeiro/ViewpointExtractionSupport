@@ -1,0 +1,1 @@
+require "ViewpointExtractionSupport/FlareAppearance"
