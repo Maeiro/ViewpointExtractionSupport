@@ -40,5 +40,5 @@ Extraction timing, boarding rules, zombie attraction and server synchronization 
 Workshop ID: 3827358939
 Mod ID: ViewpointExtractionSupport
 "
-    "changenote" "0.1.25: Adds a custom flare gun model, inventory icon and red smoke signal effect. Also reduces the weapon size by 15% and includes visual and multiplayer fixes."
+    "changenote" "0.1.26: Fixes flare gun appearance initialization on Build 42.21. The garage preview fallback is also included in the Extraction Mode PDA Integration update."
 }

@@ -42,7 +42,7 @@ Events.OnGameStart.Add(function()
     end
 end)
 Events.OnCreatePlayer.Add(playerCreated)
-Events.OnEquipPrimaryHand.Add(function(_, item) Appearance.apply(item) end)
-Events.OnEquipSecondaryHand.Add(function(_, item) Appearance.apply(item) end)
+Events.OnEquipPrimary.Add(function(_, item) Appearance.apply(item) end)
+Events.OnEquipSecondary.Add(function(_, item) Appearance.apply(item) end)
 
 return Appearance
