@@ -1,18 +1,33 @@
 local Visibility = require "ViewpointExtractionSupport/PlayerHudVisibility"
+local active, loads = false, 0
+local nativeRequire = require
+local api
+package = nil
+getActivatedMods = function() return {
+    size = function() return active and 1 or 0 end,
+    get = function() return "\\ProjectRPGExpanded" end,
+} end
+require = function(name)
+    assert(name == "PRPGE_PlayerCard")
+    loads = loads + 1
+    return api
+end
 local enabled, open = true, false
 local setting = { getValue = function() return enabled end }
 Visibility.install(setting)
+assert(loads == 0, "an absent optional PDA must not be required")
 local function element()
     return { setVisible = function(self, value) self.visible = value end }
 end
 local card = element()
 card._shown, card.portrait, card.levelBadge = true, element(), element()
 local polls = 0
-local api = { card = card, Poll = function() polls = polls + 1; return true end }
+api = { card = card, Poll = function() polls = polls + 1; return true end }
 api.Ensure = function() api.Poll(card); return card end
-package.loaded["PRPGE_PlayerCard"] = api
+active = true
 ViewpointInvScreen = { isUp = function() return open end }
 Visibility.install(setting)
+assert(loads == 1, "cache the native require result without package.loaded")
 local wrapper = api.Ensure
 Visibility.install(setting)
 assert(api.Ensure == wrapper, "installation must be idempotent")
@@ -48,4 +63,7 @@ api.Ensure()
 ViewpointInvScreen = nil
 api.Ensure()
 assert(card.visible == true, "missing Viewpoint screen must release the hidden state")
+for index = 1, 100 do Visibility.install(setting) end
+assert(loads == 1, "repeated updates must not reload the optional module")
 print("PDA player HUD visibility checks passed")
+require = nativeRequire

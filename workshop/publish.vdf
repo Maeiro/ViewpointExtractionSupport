@@ -41,5 +41,5 @@ Extraction timing, boarding rules, zombie attraction and server synchronization 
 Workshop ID: 3827358939
 Mod ID: ViewpointExtractionSupport
 "
-    "changenote" "0.1.27: Adds an enabled-by-default option to hide the ProjectRPGExpanded player HUD while the Viewpoint UI inventory screen is open, restoring it when closed."
+    "changenote" "0.1.28: Fixes repeated console errors from PDA HUD compatibility on Project Zomboid Lua. Uses protected native module loading and supports Build 42 mod IDs."
 }
