@@ -5,7 +5,7 @@ local function event()
 end
 Events = {}
 for _, name in ipairs({ "OnServerCommand", "OnClientCommand", "OnGameStart", "OnTick", "OnDisconnect",
-    "OnMainMenuEnter", "OnGameBoot", "OnCreatePlayer", "OnEquipPrimaryHand", "OnEquipSecondaryHand" }) do
+    "OnMainMenuEnter", "OnGameBoot", "OnCreatePlayer", "OnEquipPrimary", "OnEquipSecondary" }) do
     Events[name] = event()
 end
 local wall, simulation, multiplayer = 0, 0, false

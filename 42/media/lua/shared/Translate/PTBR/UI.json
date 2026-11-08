@@ -31,5 +31,7 @@
   "UI_ViewpointExtractionSupport_Aircraft_FTZOrca": "FTZ Orca",
   "UI_ViewpointExtractionSupport_AircraftTooltip_FTZOrca": "Permite que o FTZ Orca apareça. O FTZ Helicopters e sua dependência FTZ Flying precisam estar instalados e ativados. Também o disponibiliza na seleção aleatória de modelos do Visible Helicopter Events.",
   "UI_ViewpointExtractionSupport_Aircraft_FTZHellcat": "FTZ Hellcat",
-  "UI_ViewpointExtractionSupport_AircraftTooltip_FTZHellcat": "Permite que o FTZ Hellcat apareça. O FTZ Helicopters e sua dependência FTZ Flying precisam estar instalados e ativados. Também o disponibiliza na seleção aleatória de modelos do Visible Helicopter Events."
+  "UI_ViewpointExtractionSupport_AircraftTooltip_FTZHellcat": "Permite que o FTZ Hellcat apareça. O FTZ Helicopters e sua dependência FTZ Flying precisam estar instalados e ativados. Também o disponibiliza na seleção aleatória de modelos do Visible Helicopter Events.",
+  "UI_ViewpointExtractionSupport_HidePlayerHud": "Ocultar HUD do jogador do PDA no inventário Viewpoint",
+  "UI_ViewpointExtractionSupport_HidePlayerHudTooltip": "Oculta temporariamente o HUD do jogador do ProjectRPGExpanded, retrato e emblema de nível enquanto o inventário Viewpoint UI estiver aberto. Restaura o HUD ao fechar o inventário. Ativado por padrão."
 }
