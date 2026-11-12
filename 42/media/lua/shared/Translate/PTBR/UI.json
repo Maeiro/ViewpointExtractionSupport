@@ -31,5 +31,17 @@
   "UI_ViewpointExtractionSupport_Aircraft_FTZOrca": "FTZ Orca",
   "UI_ViewpointExtractionSupport_AircraftTooltip_FTZOrca": "Permite que o FTZ Orca apareça. O FTZ Helicopters e sua dependência FTZ Flying precisam estar instalados e ativados. Também o disponibiliza na seleção aleatória de modelos do Visible Helicopter Events.",
   "UI_ViewpointExtractionSupport_Aircraft_FTZHellcat": "FTZ Hellcat",
-  "UI_ViewpointExtractionSupport_AircraftTooltip_FTZHellcat": "Permite que o FTZ Hellcat apareça. O FTZ Helicopters e sua dependência FTZ Flying precisam estar instalados e ativados. Também o disponibiliza na seleção aleatória de modelos do Visible Helicopter Events."
+  "UI_ViewpointExtractionSupport_AircraftTooltip_FTZHellcat": "Permite que o FTZ Hellcat apareça. O FTZ Helicopters e sua dependência FTZ Flying precisam estar instalados e ativados. Também o disponibiliza na seleção aleatória de modelos do Visible Helicopter Events.",
+  "UI_ViewpointExtractionSupport_Compass_extraction": "Bússola: marcar automaticamente as extrações da incursão",
+  "UI_ViewpointExtractionSupport_Compass_extractionTooltip": "Requer Viewpoint Compass. Marca apenas os locais da incursão atual e remove essas anotações e waypoints ao sair dela. Ativado por padrão.",
+  "UI_ViewpointExtractionSupport_Compass_death": "Bússola: marcar permanentemente os locais de morte",
+  "UI_ViewpointExtractionSupport_Compass_deathTooltip": "Requer Viewpoint Compass. Preserva cada local de morte após renascer ou recarregar até removê-lo em Marcadores da Bússola ou no mapa. Desativar impede novas marcas de morte.",
+  "UI_ViewpointExtractionSupport_Compass_extractionIcon": "ID do símbolo de extração",
+  "UI_ViewpointExtractionSupport_Compass_deathIcon": "ID do símbolo de morte",
+  "UI_ViewpointExtractionSupport_Compass_extractionColor": "Cor do marcador de extração",
+  "UI_ViewpointExtractionSupport_Compass_deathColor": "Cor do marcador de morte",
+  "UI_ViewpointExtractionSupport_CompassIconTooltip": "ID de um símbolo do mapa, por exemplo Z, FaceDead, House ou Exclamation. IDs desconhecidos usam o padrão. Alterações de ícone e cor de morte valem para novas marcas.",
+  "UI_ViewpointExtractionSupport_CompassRaidDeathsOnly": "Bússola: marcar mortes apenas durante incursões",
+  "UI_ViewpointExtractionSupport_CompassExtractionName": "Extração %1",
+  "UI_ViewpointExtractionSupport_CompassDeathName": "Local de morte (andar %1)"
 }

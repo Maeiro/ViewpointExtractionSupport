@@ -8,7 +8,7 @@ local function event()
         fire = function(...) for _, fn in ipairs(handlers) do fn(...) end end,
     }
 end
-Events = { OnGameStart = event(), OnMainMenuEnter = event(), OnDisconnect = event(), OnTick = event(), OnPreUIDraw = event(), OnServerCommand = event() }
+Events = { OnPlayerDeath = event(), OnGameStart = event(), OnMainMenuEnter = event(), OnDisconnect = event(), OnTick = event(), OnPreUIDraw = event(), OnServerCommand = event() }
 LuaEventManager = { AddEvent = function(name) Events[name] = Events[name] or event() end }
 
 local values = {}
@@ -20,6 +20,8 @@ PZAPI = { ModOptions = { create = function()
     end
     function options:addTickBox(id, _, default) return option(id, default) end
     function options:addSlider(id, _, _, _, _, default) return option(id, default) end
+    function options:addTextEntry(id, _, default) return option(id, default) end
+    function options:addColorPicker(id, _, r, g, b, a) return option(id, {r = r, g = g, b = b, a = a}) end
     return options
 end } }
 package.loaded["PZAPI/ModOptions"] = true

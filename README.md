@@ -21,6 +21,16 @@ Enable these mods and **Viewpoint Extraction Support**, then restart the game to
 
 ## Settings
 
+### Optional Viewpoint Compass integration
+
+With Viewpoint Compass installed, extraction sites from the current participant's synchronized raid state are automatically added to the compass and map. They are removed on raid exit, death, destination changes, disconnect, or when the feature is disabled. Other annotations are preserved. The default symbol is **Z**, colored red.
+
+Each local player's death is marked at its exact map coordinates using a red **FaceDead** symbol. Extraction Mode rescues are also marked: the position is captured before the rescue request and recorded after authority confirmation, even when the engine never fires a death event. Rejected rescue requests do not create a marker unless an actual engine death occurred. Repeated rescues of the same character are supported. Death waypoints survive new characters and reloads in the same world and account. Remove one through the Compass marker manager or delete its map annotation; removing it in the manager follows Compass behavior and keeps the map annotation. Disabling death tracking stops future marks and keeps existing ones. A name includes the floor because the compass displays two-dimensional positions; a walking corpse may move away from its original death location.
+
+Both features default to enabled and work independently of the helicopter display. Mod Options exposes independent toggles, native map symbol IDs and color pickers, plus an optional restriction to deaths during raids. Death appearance changes affect newly created marks. Invalid symbol IDs use the defaults. The Compass server setting **Allow map waypoints** is respected. Marker history is local to this computer, world and user; it is not broadcast to teammates. The integration does nothing when Compass is absent.
+
+The lifecycle specification can also run against the installed Compass implementation using `python tests/run.py --visible-helicopter-root <VisibleHelicopterEvent> --compass-root <ViewpointCompass>`.
+
 In **Mod Options > Viewpoint Extraction Support**:
 
 - **Show extraction helicopter**: enabled by default.

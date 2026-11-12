@@ -2,7 +2,7 @@
 {
     "appid" "108600"
     "publishedfileid" "3827358939"
-    "contentfolder" "D:\\SteamCMD\\workshop\\ViewpointExtractionSupport\\content"
+    "contentfolder" "C:/PZMods/ViewpointExtractionSupport/build/steam-release-0.1.31/content"
     "previewfile" "D:\\SteamCMD\\workshop\\ViewpointExtractionSupport\\preview.gif"
     "visibility" "0"
     "title" "Viewpoint Extraction Support"
@@ -17,6 +17,7 @@ Displays configurable helicopter models during Extraction Mode pickups in Projec
 [*]Optionally supports FTZ Hummingbird, Orca and Hellcat. FTZ Helicopters also requires FTZ Flying.
 [*]Adds positional extraction audio, 3D extraction areas, terrain-following boarding markers, and the Board Extraction Helicopter interaction in Viewpoint.
 [*]Shows the destination and countdown during deployment, and warns raid participants when the next horde is one in-game hour away.
+[*]Optionally adds red Viewpoint Compass markers for the current raid's extraction sites and a persistent personal marker for the player's death location.
 [*]Optionally hides the Extraction Mode HUD unless an inventory or loot window is open, and optionally applies NeatUI styling when NeatUI_Framework is installed.
 [*]Adds a custom 3D model and inventory icon for Extraction Mode's flare gun, with a glowing red signal and smoke trail visible in Viewpoint. The cosmetic effect does not create fire or change extraction behavior.
 [*]Fixes missing hideout wall surfaces in the Viewpoint beta when a short Bunker or Railroad panel is selected on the reverse face of a full height wall.
@@ -37,8 +38,10 @@ The ProjectRPGExpanded PDA interface is available separately: [url=https://steam
 
 Extraction timing, boarding rules, zombie attraction and server synchronization remain owned by Extraction Mode. The flare gun keeps its original ammunition, sound and extraction behavior. In multiplayer, flare visuals are relayed to nearby players when this addon is installed on the server and clients.
 
+The optional Viewpoint Compass integration adds and removes raid-site markers with the local player's raid state. Death markers are local to the player's world and account and stay until removed through Compass or the map.
+
 Workshop ID: 3827358939
 Mod ID: ViewpointExtractionSupport
 "
-    "changenote" "0.1.29: Moves PDA player HUD hiding for Viewpoint UI inventory to Viewpoint Extended Support, where this optional compatibility feature belongs."
+    "changenote" "0.1.31: Adds optional Viewpoint Compass waypoints for active raid extraction sites and persistent personal death locations."
 }

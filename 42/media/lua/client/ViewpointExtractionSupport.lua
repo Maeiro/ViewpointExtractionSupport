@@ -10,6 +10,7 @@ local NeatUI = require "ViewpointExtractionSupport/NeatUI"
 require "ViewpointExtractionSupport/CountdownNotice"
 require "ViewpointExtractionSupport/EventNotifications"
 local FlareEffects = require "ViewpointExtractionSupport/FlareEffects"
+local Compass = require "ViewpointExtractionSupport/Compass"
 local Support = {}
 ViewpointExtractionSupport = Support
 
@@ -48,6 +49,17 @@ onlyWithInventory = options:addTickBox("onlyWithInventory", "UI_ViewpointExtract
     "UI_ViewpointExtractionSupport_OnlyWithInventoryTooltip")
 useNeatUI = options:addTickBox("useNeatUI", "UI_ViewpointExtractionSupport_UseNeatUI", true,
     "UI_ViewpointExtractionSupport_UseNeatUITooltip")
+local compassOptions = {}
+for _, kind in ipairs({"extraction", "death"}) do
+    local key = "UI_ViewpointExtractionSupport_Compass_" .. kind
+    compassOptions[kind] = options:addTickBox("compass_" .. kind, key, true, key .. "Tooltip")
+    compassOptions[kind .. "Icon"] = options:addTextEntry("compass_" .. kind .. "Icon", key .. "Icon",
+        kind == "death" and "FaceDead" or "Z", "UI_ViewpointExtractionSupport_CompassIconTooltip")
+    compassOptions[kind .. "Color"] = options:addColorPicker("compass_" .. kind .. "Color", key .. "Color", 1, 0, 0, 1)
+end
+compassOptions.raidDeathsOnly = options:addTickBox("compass_raidDeathsOnly",
+    "UI_ViewpointExtractionSupport_CompassRaidDeathsOnly", false)
+Compass.install(compassOptions)
 local aircraftChoices = {
     { id = "UH-1BHelicopter", key = "UH1B", default = true },
     { id = "AircraftMod", key = "Nightfang" },

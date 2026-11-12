@@ -31,5 +31,17 @@
   "UI_ViewpointExtractionSupport_Aircraft_FTZOrca": "FTZ Orca",
   "UI_ViewpointExtractionSupport_AircraftTooltip_FTZOrca": "Allow the FTZ Orca to appear. Requires FTZ Helicopters and its FTZ Flying dependency to be installed and enabled. Also makes it available to Visible Helicopter Events' random model selection.",
   "UI_ViewpointExtractionSupport_Aircraft_FTZHellcat": "FTZ Hellcat",
-  "UI_ViewpointExtractionSupport_AircraftTooltip_FTZHellcat": "Allow the FTZ Hellcat to appear. Requires FTZ Helicopters and its FTZ Flying dependency to be installed and enabled. Also makes it available to Visible Helicopter Events' random model selection."
+  "UI_ViewpointExtractionSupport_AircraftTooltip_FTZHellcat": "Allow the FTZ Hellcat to appear. Requires FTZ Helicopters and its FTZ Flying dependency to be installed and enabled. Also makes it available to Visible Helicopter Events' random model selection.",
+  "UI_ViewpointExtractionSupport_Compass_extraction": "Compass: automatically mark raid extraction sites",
+  "UI_ViewpointExtractionSupport_Compass_extractionTooltip": "Requires Viewpoint Compass. Marks only the current raid sites and removes these annotations and waypoints when you leave the raid. Enabled by default.",
+  "UI_ViewpointExtractionSupport_Compass_death": "Compass: permanently mark death locations",
+  "UI_ViewpointExtractionSupport_Compass_deathTooltip": "Requires Viewpoint Compass. Keeps each death location across respawns and reloads until removed in Compass Markers or on the map. Disabling this option stops new death markers.",
+  "UI_ViewpointExtractionSupport_Compass_extractionIcon": "Extraction waypoint symbol ID",
+  "UI_ViewpointExtractionSupport_Compass_deathIcon": "Death waypoint symbol ID",
+  "UI_ViewpointExtractionSupport_Compass_extractionColor": "Extraction waypoint color",
+  "UI_ViewpointExtractionSupport_Compass_deathColor": "Death waypoint color",
+  "UI_ViewpointExtractionSupport_CompassIconTooltip": "Native map symbol ID, for example Z, FaceDead, House, or Exclamation. Unknown IDs use the default. Death icon and color changes apply to new markers.",
+  "UI_ViewpointExtractionSupport_CompassRaidDeathsOnly": "Compass: mark deaths only during raids",
+  "UI_ViewpointExtractionSupport_CompassExtractionName": "Extraction %1",
+  "UI_ViewpointExtractionSupport_CompassDeathName": "Death location (floor %1)"
 }

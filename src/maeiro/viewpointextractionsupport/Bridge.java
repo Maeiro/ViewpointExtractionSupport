@@ -15,6 +15,32 @@ public final class Bridge {
     private Bridge() {
     }
 
+    public static Object compassCreate(Object collection, String icon, double x, double y,
+            double r, double g, double b, double a) throws ReflectiveOperationException {
+        Object symbol = collection.getClass().getMethod("addTexture", String.class, float.class, float.class,
+                float.class, float.class, float.class, float.class)
+                .invoke(collection, icon, (float) x, (float) y, (float) r, (float) g, (float) b, (float) a);
+        symbol.getClass().getMethod("setPrivate").invoke(symbol);
+        symbol.getClass().getMethod("setUserDefined", boolean.class).invoke(symbol, true);
+        symbol.getClass().getMethod("setAnchor", float.class, float.class).invoke(symbol, 0.5f, 0.5f);
+        symbol.getClass().getMethod("setScale", float.class).invoke(symbol, 0.65f);
+        return symbol;
+    }
+
+    public static int compassIndex(Object collection, Object symbol) throws ReflectiveOperationException {
+        return (Integer) collection.getClass().getMethod("indexOf",
+                Class.forName("zombie.worldMap.symbols.WorldMapBaseSymbol")).invoke(collection, symbol);
+    }
+
+    public static void compassRemove(Object collection, Object symbol) throws ReflectiveOperationException {
+        collection.getClass().getMethod("removeSymbol",
+                Class.forName("zombie.worldMap.symbols.WorldMapBaseSymbol")).invoke(collection, symbol);
+    }
+
+    public static void compassSave() throws ReflectiveOperationException {
+        Class.forName("zombie.inventory.types.MapItem").getMethod("SaveWorldMap").invoke(null);
+    }
+
     public static void registerFtzAircraft() {
         FtzAircraftCatalog.install();
     }

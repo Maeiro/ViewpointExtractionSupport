@@ -1,11 +1,11 @@
 name=Viewpoint Extraction Support
 id=ViewpointExtractionSupport
 author=Maeiro
-description=Visible configurable extraction helicopters, positional audio, a simulated 3D rope, boarding markers, alerts, and a custom flare gun with red signal effects.
-modversion=0.1.29
+description=Visible configurable extraction helicopters, positional audio, a simulated 3D rope, boarding markers, alerts, a custom flare gun with red signal effects, and optional Compass waypoints.
+modversion=0.1.31
 versionMin=42.21.0
 require=ExtractionMode,Viewpoint,ZombieBuddy,VisibleHelicopterEvent
-loadModAfter=ExtractionMode,VisibleHelicopterEvent
+loadModAfter=ExtractionMode,VisibleHelicopterEvent,ViewpointCompass
 javaJarFile=media/java/client/ViewpointExtractionSupport.jar
 javaPkgName=maeiro.viewpointextractionsupport
 ZBVersionMin=2.3.4
