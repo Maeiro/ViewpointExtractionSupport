@@ -18,7 +18,6 @@ Displays configurable helicopter models during Extraction Mode pickups in Projec
 [*]Adds positional extraction audio, 3D extraction areas, terrain-following boarding markers, and the Board Extraction Helicopter interaction in Viewpoint.
 [*]Shows the destination and countdown during deployment, and warns raid participants when the next horde is one in-game hour away.
 [*]Optionally adds red Viewpoint Compass markers for the current raid's extraction sites and a persistent personal marker for the player's death location.
-[*]Preserves eligible Project A-Life companions in Extraction Mode hideouts and brings them near the player on foot or vehicle raid insertion. Multiplayer relocation is handled by the server.
 [*]Optionally hides the Extraction Mode HUD unless an inventory or loot window is open, and optionally applies NeatUI styling when NeatUI_Framework is installed.
 [*]Adds a custom 3D model and inventory icon for Extraction Mode's flare gun, with a glowing red signal and smoke trail visible in Viewpoint. The cosmetic effect does not create fire or change extraction behavior.
 [*]Fixes missing hideout wall surfaces in the Viewpoint beta when a short Bunker or Railroad panel is selected on the reverse face of a full height wall.
@@ -34,17 +33,15 @@ Displays configurable helicopter models during Extraction Mode pickups in Projec
 [/list]
 Aircraft mods are optional. UH-1B Helicopter requires Aviation Core. FTZ aircraft require FTZ Helicopters and FTZ Flying. Keep Show event aircraft enabled in Visible Helicopter Events.
 
-[h2]Optional companion[/h2]
 The ProjectRPGExpanded PDA interface is available separately: [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3831366933]Extraction Mode PDA Integration[/url]. It requires ProjectRPGExpanded.
 
 Extraction timing, boarding rules, zombie attraction and server synchronization remain owned by Extraction Mode. The flare gun keeps its original ammunition, sound and extraction behavior. In multiplayer, flare visuals are relayed to nearby players when this addon is installed on the server and clients.
 
 The optional Viewpoint Compass integration adds and removes raid-site markers with the local player's raid state. Death markers are local to the player's world and account and stay until removed through Compass or the map.
 
-Project A-Life NPCs is an optional integration. Eligible companions are preserved during hideout cleanup and relocated beside the player when a raid begins, including vehicle insertions. They are not recruited or seated inside the vehicle.
 
 Workshop ID: 3827358939
 Mod ID: ViewpointExtractionSupport
 "
-    "changenote" "0.1.32: Preserves Project A-Life companions in the hideout and brings them along on foot or vehicle raid insertions."
+    "changenote" "0.1.33: Moves all Project A-Life companion fixes to the standalone A-Life Maeiro Fixes mod."
 }
