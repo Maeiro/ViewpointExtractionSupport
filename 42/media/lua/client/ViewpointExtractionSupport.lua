@@ -1,6 +1,8 @@
 require "PZAPI/ModOptions"
 require "ExtractionMode/Config"
 require "ExtractionMode/Util"
+require "ViewpointExtractionSupport/ALifeCompanions"
+require "ViewpointExtractionSupport/ALifeCompanionRaidTransition"
 
 local Flights = require "ViewpointExtractionSupport/Flights"
 local Areas = require "ViewpointExtractionSupport/Areas"

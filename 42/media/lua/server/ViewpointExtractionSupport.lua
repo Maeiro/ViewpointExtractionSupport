@@ -1,6 +1,12 @@
+local ALifeCompanions = require "ViewpointExtractionSupport/ALifeCompanions"
+
 local lastShot = setmetatable({}, { __mode = "k" })
 
-Events.OnClientCommand.Add(function(module, command, player)
+Events.OnClientCommand.Add(function(module, command, player, args)
+    if module == "ViewpointExtractionSupport" and command == "RelocateALifeCompanions" then
+        pcall(ALifeCompanions.relocate, player, args)
+        return
+    end
     if module ~= "ViewpointExtractionSupport" or command ~= "FlareShot" then return end
     if not player or player:isDead() then return end
     local weapon = player:getPrimaryHandItem()

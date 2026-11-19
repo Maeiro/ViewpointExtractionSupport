@@ -13,6 +13,7 @@ The Extraction Mode interface for ProjectRPGExpanded is available separately as 
 - [Project Viewpoint](https://steamcommunity.com/sharedfiles/filedetails/?id=3809306528).
 - ZombieBuddy 2.3.4+.
 - [Project Viewpoint - Visible Helicopter Events](https://steamcommunity.com/sharedfiles/filedetails/?id=3819322670) (initial integration targets 1.3.7).
+- Optional: [Project A-Life NPCs](https://steamcommunity.com/sharedfiles/filedetails/?id=3803984183) for preserving eligible A-Life companions in the hideout and moving them alongside the player to raid entry points.
 - Aircraft are optional. Enable only the aircraft mods you want to use, then select those aircraft in this addon's options. An aircraft is used only when its checkbox is selected and its model assets are available.
 - Optional aircraft supported by Visible Helicopter Events: UH-1B Helicopter (also needs Aviation Core), MH-92 Nightfang (`AircraftMod`), Little Bird (`LittleBird`), Chinook (`Chinook`), Black Hawk (`BlackHawk`), UH-1 Huey (`UH1`), and AH-1 SuperCobra (`AH1SuperCobra`).
 - Optional FTZ aircraft: Hummingbird, Orca and Hellcat from [FTZ Helicopters](https://steamcommunity.com/sharedfiles/filedetails/?id=3825500218), which also requires [FTZ Flying](https://steamcommunity.com/sharedfiles/filedetails/?id=3825500587). These three models are registered into the existing Visible Helicopter Events renderer at runtime. Selecting an FTZ model also makes it available to Visible Helicopter Events' own random model selection when that setting is enabled.
@@ -52,6 +53,8 @@ English and Brazilian Portuguese interface text is included. Extraction timing, 
 The flare effect follows Extraction Mode's simulation clock, including single-player pause and time acceleration. It is a cosmetic signal launched upward from the shooter, rather than a damaging ballistic projectile or a source of terrain lighting. Its visibility option is independent of the aircraft display. Lua resets, disconnection and returning to the main menu clear active signals. Flare assets require the addon on the server and clients in multiplayer; no original Extraction Mode files are replaced.
 
 ## Integration
+
+When Project A-Life NPCs is active, eligible A-Life companions are excluded from Extraction Mode's hideout retirement pass. On raid insertion, companions within 256 tiles of the player are relocated beside the player after arrival, including vehicle insertions. They remain A-Life NPCs; this integration does not recruit them or place them inside a vehicle. Multiplayer relocation is handled by the server.
 
 The addon reads the existing `ExtractionMode.ClientStates` snapshots, including the selected extraction site, extraction countdown, boarding rope and publicly supplied nearby PvPvE pickups. It never queries hidden raids or sends location requests to the server. Duplicate observations from local players share one aircraft identity.
 
